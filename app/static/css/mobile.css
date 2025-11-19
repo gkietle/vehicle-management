@@ -1,0 +1,45 @@
+/* Mobile-first responsive styles for better UX across all ages */
+
+/* Ensure minimum touch target sizes */
+@media (max-width: 768px) {
+    button, a.btn, input[type="submit"], input[type="button"] {
+        min-height: 48px !important;
+        min-width: 48px;
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+
+    input, select, textarea {
+        min-height: 48px;
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+
+    /* Prevent zoom on input focus for iOS */
+    input:focus, select:focus, textarea:focus {
+        font-size: 16px;
+    }
+}
+
+/* High contrast for better readability */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Better focus states for keyboard navigation */
+*:focus-visible {
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
