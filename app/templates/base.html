@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>{% block title %}{{ title }}{% endblock %} - Hệ thống Quản lý Phương tiện</title>
 
     <!-- Tailwind CSS CDN -->
@@ -14,30 +14,66 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        /* Larger touch targets for mobile */
+        @media (max-width: 768px) {
+            button, a, input, select, textarea {
+                min-height: 44px;
+            }
+        }
+        /* High contrast for better readability */
+        ::selection {
+            background-color: #3b82f6;
+            color: white;
+        }
     </style>
 
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 text-base sm:text-base">
     <!-- Navigation -->
-    <nav class="bg-blue-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-4">
+    <nav class="bg-blue-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 sm:py-4">
             <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                     </svg>
                     <div>
-                        <h1 class="text-xl font-bold">Hệ thống Quản lý Phương tiện</h1>
-                        <p class="text-sm text-blue-100">Phường Long Bình - Thành phố Biên Hòa</p>
+                        <h1 class="text-sm sm:text-xl font-bold leading-tight">Hệ thống Quản lý Phương tiện</h1>
+                        <p class="text-xs sm:text-sm text-blue-100 hidden sm:block">Phường Long Bình - Thành phố Biên Hòa</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="/" class="hover:text-blue-200 transition">Trang chủ</a>
-                    <a href="/tra-cuu" class="hover:text-blue-200 transition">Tra cứu xe</a>
-                    <a href="/tra-cuu-yeu-cau" class="hover:text-blue-200 transition">Tra cứu yêu cầu</a>
-                    <a href="/admin/dashboard" class="hover:text-blue-200 transition">Quản trị</a>
+
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-btn" class="sm:hidden p-2 rounded hover:bg-blue-700 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <!-- Desktop menu -->
+                <div class="hidden sm:flex items-center space-x-4 lg:space-x-6">
+                    <a href="/" class="hover:text-blue-200 transition font-medium">Trang chủ</a>
+                    <a href="/tra-cuu" class="hover:text-blue-200 transition font-medium">Tra cứu xe</a>
+                    <a href="/tra-cuu-yeu-cau" class="hover:text-blue-200 transition font-medium">Tra cứu yêu cầu</a>
+                    <a href="/admin/dashboard" class="hover:text-blue-200 transition font-medium">Quản trị</a>
                 </div>
+            </div>
+
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden sm:hidden mt-4 pb-2 space-y-2">
+                <a href="/" class="block py-3 px-4 rounded bg-blue-700 hover:bg-blue-800 transition font-medium text-base">
+                    Trang chủ
+                </a>
+                <a href="/tra-cuu" class="block py-3 px-4 rounded bg-blue-700 hover:bg-blue-800 transition font-medium text-base">
+                    Tra cứu xe
+                </a>
+                <a href="/tra-cuu-yeu-cau" class="block py-3 px-4 rounded bg-blue-700 hover:bg-blue-800 transition font-medium text-base">
+                    Tra cứu yêu cầu
+                </a>
+                <a href="/admin/dashboard" class="block py-3 px-4 rounded bg-blue-700 hover:bg-blue-800 transition font-medium text-base">
+                    Quản trị
+                </a>
             </div>
         </div>
     </nav>
@@ -49,10 +85,21 @@
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white mt-16">
-        <div class="container mx-auto px-4 py-6 text-center">
-            <p>&copy; 2025 UBND Phường Long Bình. Hệ thống tra cứu và quản lý phương tiện giao thông.</p>
+        <div class="container mx-auto px-4 py-6 sm:py-8">
+            <div class="text-center">
+                <p class="text-sm sm:text-base mb-2">&copy; 2025 UBND Phường Long Bình</p>
+                <p class="text-xs sm:text-sm text-gray-400">Hệ thống tra cứu và quản lý phương tiện giao thông</p>
+            </div>
         </div>
     </footer>
+
+    <!-- Mobile menu toggle script -->
+    <script>
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+    </script>
 
     {% block scripts %}{% endblock %}
 </body>

@@ -1,42 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-6xl mx-auto">
     <!-- Hero Section -->
-    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+    <div class="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-6 sm:mb-8">
         <div class="text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-3 sm:mb-4 leading-tight">
                 Hệ thống Tra cứu & Quản lý Phương tiện
             </h2>
-            <p class="text-gray-600 text-lg mb-6">
+            <p class="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
                 Tra cứu thông tin phương tiện và gửi yêu cầu cập nhật dữ liệu
             </p>
-            <div class="inline-flex items-center bg-blue-50 px-6 py-3 rounded-lg">
-                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="inline-flex items-center bg-blue-50 px-4 sm:px-6 py-3 sm:py-4 rounded-lg">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <span class="text-blue-800 font-medium">Phường Long Bình - Thành phố Biên Hòa - Tỉnh Đồng Nai</span>
+                <span class="text-sm sm:text-base text-blue-800 font-medium">Phường Long Bình - TP Biên Hòa - Đồng Nai</span>
             </div>
         </div>
     </div>
 
     <!-- Main Actions -->
-    <div class="grid md:grid-cols-3 gap-6 mb-8">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <!-- Tra cứu biển số -->
-        <a href="/tra-cuu" class="group">
-            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-6 border-2 border-transparent group-hover:border-blue-500">
+        <a href="/tra-cuu" class="group block">
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-5 sm:p-6 border-2 border-transparent group-hover:border-blue-500 h-full">
                 <div class="flex items-center mb-4">
-                    <div class="bg-blue-100 rounded-full p-3 mr-4">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="bg-blue-100 rounded-full p-3 sm:p-4 mr-3 sm:mr-4 flex-shrink-0">
+                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800">Tra cứu biển số</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-800 leading-tight">Tra cứu biển số</h3>
                 </div>
-                <p class="text-gray-600">
+                <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed">
                     Tìm kiếm thông tin xe theo biển số đăng ký. Kiểm tra thông tin chủ xe, địa chỉ, và trạng thái phương tiện.
                 </p>
-                <div class="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-flex items-center">
+                <div class="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-flex items-center text-sm sm:text-base">
                     Bắt đầu tra cứu
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -46,20 +46,20 @@
         </a>
 
         <!-- Tra cứu yêu cầu -->
-        <a href="/tra-cuu-yeu-cau" class="group">
-            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-6 border-2 border-transparent group-hover:border-purple-500">
+        <a href="/tra-cuu-yeu-cau" class="group block">
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-5 sm:p-6 border-2 border-transparent group-hover:border-purple-500 h-full">
                 <div class="flex items-center mb-4">
-                    <div class="bg-purple-100 rounded-full p-3 mr-4">
-                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="bg-purple-100 rounded-full p-3 sm:p-4 mr-3 sm:mr-4 flex-shrink-0">
+                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800">Tra cứu yêu cầu</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-800 leading-tight">Tra cứu yêu cầu</h3>
                 </div>
-                <p class="text-gray-600">
+                <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed">
                     Tra cứu trạng thái yêu cầu đã gửi bằng mã số yêu cầu. Kiểm tra tiến trình xử lý.
                 </p>
-                <div class="mt-4 text-purple-600 font-semibold group-hover:translate-x-2 transition-transform inline-flex items-center">
+                <div class="mt-4 text-purple-600 font-semibold group-hover:translate-x-2 transition-transform inline-flex items-center text-sm sm:text-base">
                     Tra cứu ngay
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -69,20 +69,20 @@
         </a>
 
         <!-- Gửi yêu cầu cập nhật -->
-        <div class="bg-white rounded-lg shadow-md p-6 border-2 border-gray-200">
+        <div class="bg-white rounded-lg shadow-md p-5 sm:p-6 border-2 border-gray-200 h-full sm:col-span-2 lg:col-span-1">
             <div class="flex items-center mb-4">
-                <div class="bg-green-100 rounded-full p-3 mr-4">
-                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-green-100 rounded-full p-3 sm:p-4 mr-3 sm:mr-4 flex-shrink-0">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-800">Gửi yêu cầu cập nhật</h3>
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 leading-tight">Gửi yêu cầu cập nhật</h3>
             </div>
-            <p class="text-gray-600 mb-4">
+            <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed">
                 Sau khi tra cứu, nếu thông tin không chính xác hoặc cần cập nhật, bạn có thể gửi yêu cầu theo các biểu mẫu.
             </p>
             <div class="bg-gray-50 p-4 rounded-lg">
-                <p class="text-sm text-gray-600 italic">
+                <p class="text-sm sm:text-base text-gray-600">
                     💡 Vui lòng tra cứu biển số trước khi gửi yêu cầu cập nhật
                 </p>
             </div>
@@ -90,85 +90,85 @@
     </div>
 
     <!-- Information Cards -->
-    <div class="grid md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div class="bg-white rounded-lg shadow-md p-5 sm:p-6">
             <div class="text-center">
-                <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-purple-100 rounded-full w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                     </svg>
                 </div>
-                <h4 class="font-bold text-gray-800 mb-2">10 Biểu mẫu</h4>
-                <p class="text-sm text-gray-600">Các biểu mẫu chuẩn theo quy định của Bộ GTVT</p>
+                <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-2">10 Biểu mẫu</h4>
+                <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Các biểu mẫu chuẩn theo quy định của Bộ GTVT</p>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white rounded-lg shadow-md p-5 sm:p-6">
             <div class="text-center">
-                <div class="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-orange-100 rounded-full w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                     </svg>
                 </div>
-                <h4 class="font-bold text-gray-800 mb-2">Dữ liệu chính xác</h4>
-                <p class="text-sm text-gray-600">Dữ liệu từ Cục Đăng kiểm Việt Nam</p>
+                <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-2">Dữ liệu chính xác</h4>
+                <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Dữ liệu từ Cục Đăng kiểm Việt Nam</p>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white rounded-lg shadow-md p-5 sm:p-6 sm:col-span-2 lg:col-span-1">
             <div class="text-center">
-                <div class="bg-teal-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-teal-100 rounded-full w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
                 </div>
-                <h4 class="font-bold text-gray-800 mb-2">Xử lý nhanh</h4>
-                <p class="text-sm text-gray-600">Hệ thống tự động, tiện lợi và dễ sử dụng</p>
+                <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-2">Xử lý nhanh</h4>
+                <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Hệ thống tự động, tiện lợi và dễ sử dụng</p>
             </div>
         </div>
     </div>
 
     <!-- Instructions -->
-    <div class="bg-white rounded-lg shadow-md p-8 mt-8">
-        <h3 class="text-2xl font-bold text-gray-800 mb-6">Hướng dẫn sử dụng</h3>
-        <div class="space-y-4">
+    <div class="bg-white rounded-lg shadow-md p-5 sm:p-8">
+        <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">Hướng dẫn sử dụng</h3>
+        <div class="space-y-4 sm:space-y-5">
             <div class="flex items-start">
-                <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0 font-bold">
+                <div class="bg-blue-600 text-white rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0 font-bold text-lg sm:text-xl">
                     1
                 </div>
-                <div>
-                    <h4 class="font-bold text-gray-800 mb-1">Tra cứu biển số xe</h4>
-                    <p class="text-gray-600">Nhập biển số xe vào ô tìm kiếm (ví dụ: 60B100129). Hệ thống sẽ hiển thị đầy đủ thông tin đăng ký.</p>
+                <div class="flex-1">
+                    <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-1 sm:mb-2">Tra cứu biển số xe</h4>
+                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Nhập biển số xe vào ô tìm kiếm (ví dụ: 60B100129). Hệ thống sẽ hiển thị đầy đủ thông tin đăng ký.</p>
                 </div>
             </div>
 
             <div class="flex items-start">
-                <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0 font-bold">
+                <div class="bg-blue-600 text-white rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0 font-bold text-lg sm:text-xl">
                     2
                 </div>
-                <div>
-                    <h4 class="font-bold text-gray-800 mb-1">Kiểm tra thông tin</h4>
-                    <p class="text-gray-600">Xem kỹ thông tin hiển thị. Nếu thông tin đúng, chọn "Xác nhận thông tin đúng". Nếu sai, chọn loại yêu cầu phù hợp.</p>
+                <div class="flex-1">
+                    <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-1 sm:mb-2">Kiểm tra thông tin</h4>
+                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Xem kỹ thông tin hiển thị. Nếu thông tin đúng, chọn "Xác nhận thông tin đúng". Nếu sai, chọn loại yêu cầu phù hợp.</p>
                 </div>
             </div>
 
             <div class="flex items-start">
-                <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0 font-bold">
+                <div class="bg-blue-600 text-white rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0 font-bold text-lg sm:text-xl">
                     3
                 </div>
-                <div>
-                    <h4 class="font-bold text-gray-800 mb-1">Điền biểu mẫu</h4>
-                    <p class="text-gray-600">Điền đầy đủ thông tin theo biểu mẫu đã chọn. Các trường có dấu (*) là bắt buộc.</p>
+                <div class="flex-1">
+                    <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-1 sm:mb-2">Điền biểu mẫu</h4>
+                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Điền đầy đủ thông tin theo biểu mẫu đã chọn. Các trường có dấu (*) là bắt buộc.</p>
                 </div>
             </div>
 
             <div class="flex items-start">
-                <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0 font-bold">
+                <div class="bg-blue-600 text-white rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0 font-bold text-lg sm:text-xl">
                     4
                 </div>
-                <div>
-                    <h4 class="font-bold text-gray-800 mb-1">Gửi yêu cầu</h4>
-                    <p class="text-gray-600">Kiểm tra lại thông tin và gửi yêu cầu. Bạn sẽ nhận được mã số yêu cầu để theo dõi.</p>
+                <div class="flex-1">
+                    <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-1 sm:mb-2">Gửi yêu cầu</h4>
+                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Kiểm tra lại thông tin và gửi yêu cầu. Bạn sẽ nhận được mã số yêu cầu để theo dõi.</p>
                 </div>
             </div>
         </div>
