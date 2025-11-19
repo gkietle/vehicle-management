@@ -23,6 +23,9 @@ app = FastAPI(
     description="Hệ thống tra cứu và quản lý thông tin phương tiện giao thông"
 )
 
+# Ensure static directory exists
+settings.STATIC_DIR.mkdir(parents=True, exist_ok=True)
+
 # Mount static files
 app.mount("/static", StaticFiles(directory=str(settings.STATIC_DIR)), name="static")
 
