@@ -170,7 +170,12 @@ async function submitRequest() {
     // Convert FormData to JSON
     const data = {};
     formData.forEach((value, key) => {
-        data[key] = value;
+        // Convert loai_mau to integer
+        if (key === 'loai_mau') {
+            data[key] = parseInt(value);
+        } else {
+            data[key] = value;
+        }
     });
 
     try {
