@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h2 class="text-3xl font-bold text-gray-800">Danh sách yêu cầu</h2>
+        <p class="text-gray-600">
+            {% if loai_mau %}
+                Hiển thị yêu cầu cho Mẫu {{ loai_mau }}
+            {% else %}
+                Hiển thị tất cả yêu cầu
+            {% endif %}
+        </p>
+    </div>
+    <a href="/admin/dashboard" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+        Quay lại Dashboard
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+    <h4 class="font-semibold text-gray-800 mb-4">Lọc theo biểu mẫu</h4>
+    <div class="flex flex-wrap gap-2">
+        <a href="/admin/yeu-cau" class="px-4 py-2 {% if not loai_mau %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-800{% endif %} rounded-lg hover:bg-blue-700">
+            Tất cả ({{ requests|length }})
+        </a>
+        {% for i in range(1, 11) %}
+        <a href="/admin/yeu-cau?loai_mau={{ i }}" class="px-4 py-2 {% if loai_mau == i %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-800{% endif %} rounded-lg hover:bg-blue-700">
+            Mẫu {{ i }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Requests Table -->
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã YC</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Biển số</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại mẫu</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chủ xe</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày tạo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% if requests %}
+                    {% for req in requests %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-blue-600">{{ req.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">{{ req.bien_so }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                Mẫu {{ req.loai_mau }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm">{{ req.chu_xe or '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ req.ngay_tao.strftime('%d/%m/%Y %H:%M') if req.ngay_tao else '-' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {% if req.trang_thai == 'pending' %}
+                                <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
+                                    Chờ xử lý
+                                </span>
+                            {% elif req.trang_thai == 'approved' %}
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                    Đã duyệt
+                                </span>
+                            {% elif req.trang_thai == 'rejected' %}
+                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">
+                                    Từ chối
+                                </span>
+                            {% else %}
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                                    Đã xử lý
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                            {% if req.trang_thai == 'pending' %}
+                                <button onclick="approveRequest('{{ req.id }}')" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs">
+                                    Phê duyệt
+                                </button>
+                                <button onclick="rejectRequest('{{ req.id }}')" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs">
+                                    Từ chối
+                                </button>
+                            {% elif req.trang_thai == 'approved' %}
+                                <button onclick="markProcessed('{{ req.id }}')" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs">
+                                    Đã xử lý
+                                </button>
+                            {% endif %}
+                            <a href="/admin/request/{{ req.id }}" class="inline-block px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-xs">
+                                Chi tiết
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            Chưa có yêu cầu nào
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-6 text-center">
+    <p class="text-gray-600">Tổng số: <strong>{{ requests|length }}</strong> yêu cầu</p>
+</div>
+
+<!-- Modal for rejection reason -->
+<div id="rejectModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Lý do từ chối</h3>
+            <textarea id="rejectReason" class="w-full px-3 py-2 border border-gray-300 rounded-md" rows="4" placeholder="Nhập lý do từ chối..."></textarea>
+            <div class="flex justify-end space-x-2 mt-4">
+                <button onclick="closeRejectModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                    Hủy
+                </button>
+                <button onclick="confirmReject()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                    Xác nhận từ chối
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentRequestId = null;
+
+    async function approveRequest(requestId) {
+        if (!confirm('Bạn có chắc chắn muốn phê duyệt yêu cầu này?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/admin/request/${requestId}/approve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Có lỗi xảy ra: ' + data.message);
+            }
+        } catch (error) {
+            alert('Có lỗi xảy ra khi phê duyệt yêu cầu');
+            console.error(error);
+        }
+    }
+
+    function rejectRequest(requestId) {
+        currentRequestId = requestId;
+        document.getElementById('rejectModal').classList.remove('hidden');
+        document.getElementById('rejectReason').value = '';
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModal').classList.add('hidden');
+        currentRequestId = null;
+    }
+
+    async function confirmReject() {
+        const reason = document.getElementById('rejectReason').value.trim();
+
+        if (!reason) {
+            alert('Vui lòng nhập lý do từ chối');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/admin/request/${currentRequestId}/reject?reason=${encodeURIComponent(reason)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert(data.message);
+                closeRejectModal();
+                location.reload();
+            } else {
+                alert('Có lỗi xảy ra: ' + data.message);
+            }
+        } catch (error) {
+            alert('Có lỗi xảy ra khi từ chối yêu cầu');
+            console.error(error);
+        }
+    }
+
+    async function markProcessed(requestId) {
+        if (!confirm('Bạn có chắc chắn đã gửi yêu cầu này cho cơ quan nhà nước?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/admin/request/${requestId}/mark-processed`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Có lỗi xảy ra: ' + data.message);
+            }
+        } catch (error) {
+            alert('Có lỗi xảy ra khi đánh dấu yêu cầu');
+            console.error(error);
+        }
+    }
+</script>
+{% endblock %}

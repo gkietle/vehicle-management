@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h2 class="text-3xl font-bold text-gray-800">Dữ liệu đợt: {{ batch.name }}</h2>
+        <p class="text-gray-600">{{ batch.description or 'Không có mô tả' }}</p>
+    </div>
+    <a href="/admin/batches" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+        Quay lại danh sách đợt
+    </a>
+</div>
+
+<!-- Search Box -->
+<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+    <div class="flex items-center space-x-4">
+        <div class="flex-1">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm biển số, tên chủ xe, số khung, số máy..."
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button onclick="search()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            Tìm kiếm
+        </button>
+        <button onclick="clearSearch()" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+            Xóa
+        </button>
+    </div>
+</div>
+
+<!-- Results Info -->
+<div class="mb-4 flex justify-between items-center">
+    <div class="text-gray-600">
+        <span id="totalRecords">Đang tải...</span>
+    </div>
+    <div class="text-gray-600 text-sm">
+        Trang <span id="currentPage">1</span> / <span id="totalPages">1</span>
+    </div>
+</div>
+
+<!-- Data Table -->
+<div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Biển số</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Loại xe</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Chủ xe</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Địa chỉ</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Khu phố</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">SĐT</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Số khung</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Số máy</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">File gốc</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sheet</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+                <tr>
+                    <td colspan="10" class="px-6 py-8 text-center text-gray-500">
+                        Đang tải dữ liệu...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div id="pagination" class="flex justify-center space-x-2">
+    <!-- Pagination buttons will be inserted here -->
+</div>
+
+<script>
+    const batchId = {{ batch.id }};
+    let currentPage = 1;
+    let currentSearch = '';
+    const pageSize = 50;
+
+    // Load data when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+        loadData();
+    });
+
+    // Search on Enter key
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            search();
+        }
+    });
+
+    function search() {
+        currentSearch = document.getElementById('searchInput').value;
+        currentPage = 1;
+        loadData();
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        currentSearch = '';
+        currentPage = 1;
+        loadData();
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        loadData();
+    }
+
+    async function loadData() {
+        const tableBody = document.getElementById('tableBody');
+        const totalRecordsSpan = document.getElementById('totalRecords');
+        const currentPageSpan = document.getElementById('currentPage');
+        const totalPagesSpan = document.getElementById('totalPages');
+        const paginationDiv = document.getElementById('pagination');
+
+        // Show loading
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="10" class="px-6 py-8 text-center text-gray-500">
+                    <div class="flex justify-center items-center">
+                        <svg class="animate-spin h-5 w-5 mr-2 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Đang tải...
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        try {
+            const params = new URLSearchParams({
+                page: currentPage,
+                page_size: pageSize,
+                search: currentSearch
+            });
+
+            const response = await fetch(`/admin/batches/${batchId}/records?${params}`);
+            const data = await response.json();
+
+            if (data.success) {
+                const { records, pagination } = data;
+
+                // Update info
+                totalRecordsSpan.textContent = `Tổng số: ${pagination.total} records`;
+                currentPageSpan.textContent = pagination.page;
+                totalPagesSpan.textContent = pagination.total_pages;
+
+                // Render table
+                if (records.length > 0) {
+                    tableBody.innerHTML = records.map(record => `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm font-semibold text-blue-600">${record.bien_so || '-'}</td>
+                            <td class="px-4 py-3 text-sm">${record.loai_xe || '-'}</td>
+                            <td class="px-4 py-3 text-sm">${record.ten || '-'}</td>
+                            <td class="px-4 py-3 text-sm max-w-xs truncate" title="${record.dia_chi_dang_ky_xe || '-'}">${record.dia_chi_dang_ky_xe || '-'}</td>
+                            <td class="px-4 py-3 text-sm">${record.khu_pho || '-'}</td>
+                            <td class="px-4 py-3 text-sm">${record.so_dien_thoai || '-'}</td>
+                            <td class="px-4 py-3 text-sm font-mono text-xs">${record.so_khung || '-'}</td>
+                            <td class="px-4 py-3 text-sm font-mono text-xs">${record.so_may || '-'}</td>
+                            <td class="px-4 py-3 text-sm">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs" title="${record.source_file}">
+                                    ${truncateFilename(record.source_file, 15)}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-600">${record.sheet_name || '-'}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="10" class="px-6 py-8 text-center text-gray-500">
+                                ${currentSearch ? 'Không tìm thấy kết quả' : 'Chưa có dữ liệu'}
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                // Render pagination
+                renderPagination(pagination);
+            }
+        } catch (error) {
+            console.error('Error loading data:', error);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="10" class="px-6 py-8 text-center text-red-500">
+                        Lỗi khi tải dữ liệu
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    function renderPagination(pagination) {
+        const paginationDiv = document.getElementById('pagination');
+        const { page, total_pages } = pagination;
+
+        if (total_pages <= 1) {
+            paginationDiv.innerHTML = '';
+            return;
+        }
+
+        let buttons = [];
+
+        // Previous button
+        if (page > 1) {
+            buttons.push(`
+                <button onclick="goToPage(${page - 1})" class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                    &laquo; Trước
+                </button>
+            `);
+        }
+
+        // Page numbers
+        const startPage = Math.max(1, page - 2);
+        const endPage = Math.min(total_pages, page + 2);
+
+        if (startPage > 1) {
+            buttons.push(`
+                <button onclick="goToPage(1)" class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">1</button>
+            `);
+            if (startPage > 2) {
+                buttons.push(`<span class="px-2 py-1">...</span>`);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const isActive = i === page;
+            buttons.push(`
+                <button onclick="goToPage(${i})"
+                        class="px-3 py-1 ${isActive ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'} rounded">
+                    ${i}
+                </button>
+            `);
+        }
+
+        if (endPage < total_pages) {
+            if (endPage < total_pages - 1) {
+                buttons.push(`<span class="px-2 py-1">...</span>`);
+            }
+            buttons.push(`
+                <button onclick="goToPage(${total_pages})" class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">${total_pages}</button>
+            `);
+        }
+
+        // Next button
+        if (page < total_pages) {
+            buttons.push(`
+                <button onclick="goToPage(${page + 1})" class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                    Sau &raquo;
+                </button>
+            `);
+        }
+
+        paginationDiv.innerHTML = buttons.join('');
+    }
+
+    function truncateFilename(filename, maxLength) {
+        if (!filename || filename.length <= maxLength) return filename;
+        const ext = filename.split('.').pop();
+        const nameWithoutExt = filename.substring(0, filename.length - ext.length - 1);
+        if (nameWithoutExt.length <= maxLength - ext.length - 4) return filename;
+        return nameWithoutExt.substring(0, maxLength - ext.length - 4) + '...' + ext;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ form_name }}</h2>
+        <p class="text-gray-600 mb-6">Điền đầy đủ thông tin vào biểu mẫu bên dưới</p>
+
+        <form id="requestForm" class="space-y-6">
+            <input type="hidden" name="loai_mau" value="{{ loai_mau }}">
+
+            <!-- Biển số -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Biển số xe <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    name="bien_so"
+                    value="{{ bien_so }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 uppercase"
+                    required
+                >
+            </div>
+
+            <!-- Common fields -->
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Loại xe</label>
+                    <input
+                        type="text"
+                        name="loai_xe"
+                        value="{% if vehicle %}{{ vehicle.loai_xe }}{% endif %}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Chủ xe</label>
+                    <input
+                        type="text"
+                        name="chu_xe"
+                        value="{% if vehicle %}{{ vehicle.ten }}{% endif %}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    >
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ của chủ xe</label>
+                <input
+                    type="text"
+                    name="dia_chi_chu_xe"
+                    value="{% if vehicle %}{{ vehicle.dia_chi_dang_ky_xe }}{% endif %}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                >
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Số điện thoại chủ xe</label>
+                    <input
+                        type="text"
+                        name="so_dien_thoai_chu_xe"
+                        value="{% if vehicle %}{{ vehicle.so_dien_thoai }}{% endif %}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mã số thuế/CCCD chủ xe</label>
+                    <input
+                        type="text"
+                        name="ma_so_thue_chu_xe"
+                        value="{% if vehicle %}{{ vehicle.so_giay_to }}{% endif %}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    >
+                </div>
+            </div>
+
+            {% if loai_mau in [2, 3, 4, 7, 8, 9] %}
+            <!-- For forms about ownership changes -->
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h4 class="font-semibold text-gray-800 mb-3">Thông tin người mua/đang sử dụng</h4>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tên người mua/đang sử dụng xe</label>
+                        <input
+                            type="text"
+                            name="ten_nguoi_mua"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ hiện tại</label>
+                        <input
+                            type="text"
+                            name="dia_chi_nguoi_mua"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        >
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Số CCCD/mã số thuế</label>
+                            <input
+                                type="text"
+                                name="so_cccd_nguoi_mua"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
+                            <input
+                                type="text"
+                                name="so_dien_thoai_nguoi_mua"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if loai_mau in [5, 10] %}
+            <!-- For new vehicles -->
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h4 class="font-semibold text-gray-800 mb-3">Thông tin xe mới</h4>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Số khung</label>
+                        <input
+                            type="text"
+                            name="so_khung"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Số máy</label>
+                        <input
+                            type="text"
+                            name="so_may"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        >
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Additional info -->
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tình trạng phương tiện</label>
+                    <select name="tinh_trang_xe" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="">Chọn tình trạng</option>
+                        <option value="Tốt">Tốt</option>
+                        <option value="Hỏng">Hỏng</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ghi chú</label>
+                <textarea
+                    name="ghi_chu"
+                    rows="3"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    placeholder="Thông tin bổ sung (nếu có)"
+                ></textarea>
+            </div>
+
+            <!-- Submit buttons -->
+            <div class="flex space-x-4">
+                <button
+                    type="submit"
+                    class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
+                >
+                    Gửi yêu cầu
+                </button>
+                <a
+                    href="/tra-cuu"
+                    class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-semibold"
+                >
+                    Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('requestForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+
+        // Convert loai_mau to integer
+        data.loai_mau = parseInt(data.loai_mau);
+
+        try {
+            const response = await fetch('/api/request/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                window.location.href = `/yeu-cau/thanh-cong?request_id=${result.request_id}`;
+            } else {
+                alert('Lỗi: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại.');
+        }
+    });
+</script>
+{% endblock %}

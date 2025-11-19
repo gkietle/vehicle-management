@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Tra cứu biển số xe</h2>
+        <p class="text-gray-600">Nhập biển số xe để tra cứu thông tin đăng ký</p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <form id="searchForm" class="space-y-6">
+            <div>
+                <label for="bien_so" class="block text-sm font-medium text-gray-700 mb-2">
+                    Biển số xe <span class="text-red-500">*</span>
+                </label>
+                <div class="flex space-x-4">
+                    <input
+                        type="text"
+                        id="bien_so"
+                        name="bien_so"
+                        placeholder="Ví dụ: 60B100129"
+                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg uppercase"
+                        required
+                    >
+                    <button
+                        type="submit"
+                        class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center"
+                    >
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Tra cứu
+                    </button>
+                </div>
+                <p class="mt-2 text-sm text-gray-500">Nhập đúng biển số xe không dấu, viết hoa (VD: 60B100129, 60AA10113)</p>
+            </div>
+        </form>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="hidden bg-blue-50 rounded-lg p-8 text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <p class="mt-4 text-blue-800 font-medium">Đang tìm kiếm...</p>
+    </div>
+
+    <!-- Not Found Message -->
+    <div id="notFound" class="hidden bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg">
+        <div class="flex items-start">
+            <svg class="w-6 h-6 text-yellow-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <div>
+                <h3 class="font-bold text-yellow-800 mb-1">Không tìm thấy thông tin</h3>
+                <p class="text-yellow-700" id="notFoundMessage">Không tìm thấy biển số trong hệ thống.</p>
+                <p class="text-sm text-yellow-600 mt-2">Nếu xe chưa có trong danh sách, bạn có thể <a href="#" onclick="submitNewVehicle()" class="underline font-semibold">gửi yêu cầu thêm mới</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    <div id="results" class="hidden">
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <svg class="w-7 h-7 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Thông tin phương tiện
+            </h3>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-4 text-lg border-b pb-2">Thông tin xe</h4>
+                    <div class="space-y-3">
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Biển số:</span>
+                            <span id="result_bien_so" class="font-semibold text-gray-900"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Loại xe:</span>
+                            <span id="result_loai_xe" class="text-gray-900"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Số khung:</span>
+                            <span id="result_so_khung" class="text-gray-900 text-sm"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Số máy:</span>
+                            <span id="result_so_may" class="text-gray-900 text-sm"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Trạng thái:</span>
+                            <span id="result_trang_thai" class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-4 text-lg border-b pb-2">Thông tin chủ xe</h4>
+                    <div class="space-y-3">
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Họ tên:</span>
+                            <span id="result_ten" class="font-semibold text-gray-900"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Giấy tờ:</span>
+                            <span id="result_giay_to" class="text-gray-900 text-sm"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Số giấy tờ:</span>
+                            <span id="result_so_giay_to" class="text-gray-900 text-sm"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Điện thoại:</span>
+                            <span id="result_sdt" class="text-gray-900"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="text-gray-600 w-32">Khu phố:</span>
+                            <span id="result_khu_pho" class="text-gray-900"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <h4 class="font-semibold text-gray-700 mb-3 text-lg border-b pb-2">Địa chỉ</h4>
+                <div class="space-y-2">
+                    <div>
+                        <span class="text-gray-600">Địa chỉ đăng ký:</span>
+                        <span id="result_dia_chi_dk" class="ml-2 text-gray-900"></span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Địa chỉ thường trú:</span>
+                        <span id="result_dia_chi_tt" class="ml-2 text-gray-900"></span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Nơi ở hiện tại:</span>
+                        <span id="result_noi_o" class="ml-2 text-gray-900"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bg-gray-50 rounded-lg p-6">
+            <h4 class="font-bold text-gray-800 mb-4">Thông tin có chính xác không?</h4>
+            <div class="grid md:grid-cols-2 gap-4">
+                <button
+                    onclick="confirmCorrect()"
+                    class="px-6 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold flex items-center justify-center"
+                >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Thông tin chính xác
+                </button>
+                <button
+                    onclick="showFormOptions()"
+                    class="px-6 py-4 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-semibold flex items-center justify-center"
+                >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Cần cập nhật thông tin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Selection Modal -->
+    <div id="formModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4 max-h-screen overflow-y-auto">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Chọn loại yêu cầu cập nhật</h3>
+
+            <div class="space-y-3">
+                <a href="#" onclick="goToForm(1)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                    <div class="font-semibold text-gray-800">Mẫu 1: Xe và chủ xe đúng (Biển xanh)</div>
+                    <p class="text-sm text-gray-600 mt-1">Xác nhận thông tin chính xác</p>
+                </a>
+
+                <a href="#" onclick="goToForm(2)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                    <div class="font-semibold text-gray-800">Mẫu 2: Có chủ xe nhưng không có xe tại địa bàn (Biển xanh)</div>
+                    <p class="text-sm text-gray-600 mt-1">Chủ xe ở địa bàn nhưng xe không có</p>
+                </a>
+
+                <a href="#" onclick="goToForm(3)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                    <div class="font-semibold text-gray-800">Mẫu 3: Có xe nhưng không có chủ xe tại địa bàn (Biển xanh)</div>
+                    <p class="text-sm text-gray-600 mt-1">Xe ở địa bàn nhưng chủ xe không có</p>
+                </a>
+
+                <a href="#" onclick="goToForm(4)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                    <div class="font-semibold text-gray-800">Mẫu 4: Không có xe và chủ xe tại địa bàn (Biển xanh)</div>
+                    <p class="text-sm text-gray-600 mt-1">Cả xe và chủ đều không ở địa bàn</p>
+                </a>
+
+                <a href="#" onclick="goToForm(6)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                    <div class="font-semibold text-gray-800">Mẫu 6: Xe và chủ xe đúng (Biển trắng/vàng)</div>
+                    <p class="text-sm text-gray-600 mt-1">Xác nhận thông tin chính xác</p>
+                </a>
+
+                <a href="#" onclick="goToForm(7)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                    <div class="font-semibold text-gray-800">Mẫu 7: Có chủ xe nhưng không có xe (Biển trắng/vàng)</div>
+                    <p class="text-sm text-gray-600 mt-1">Chủ xe ở địa bàn nhưng xe không có</p>
+                </a>
+
+                <a href="#" onclick="goToForm(8)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                    <div class="font-semibold text-gray-800">Mẫu 8: Có xe nhưng không có chủ xe (Biển trắng/vàng)</div>
+                    <p class="text-sm text-gray-600 mt-1">Xe ở địa bàn nhưng chủ xe không có</p>
+                </a>
+
+                <a href="#" onclick="goToForm(9)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                    <div class="font-semibold text-gray-800">Mẫu 9: Không có xe và chủ xe (Biển trắng/vàng)</div>
+                    <p class="text-sm text-gray-600 mt-1">Cả xe và chủ đều không ở địa bàn</p>
+                </a>
+            </div>
+
+            <button
+                onclick="closeFormModal()"
+                class="mt-6 w-full px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-semibold"
+            >
+                Đóng
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentBienSo = '';
+
+    document.getElementById('searchForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const bienSo = document.getElementById('bien_so').value.trim().toUpperCase();
+        currentBienSo = bienSo;
+
+        // Show loading, hide others
+        document.getElementById('loading').classList.remove('hidden');
+        document.getElementById('results').classList.add('hidden');
+        document.getElementById('notFound').classList.add('hidden');
+
+        try {
+            const formData = new FormData();
+            formData.append('bien_so', bienSo);
+
+            const response = await fetch('/api/search', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            // Hide loading
+            document.getElementById('loading').classList.add('hidden');
+
+            if (data.found && data.vehicle) {
+                // Show results
+                displayResults(data.vehicle);
+            } else {
+                // Show not found
+                document.getElementById('notFound').classList.remove('hidden');
+                document.getElementById('notFoundMessage').textContent = data.message;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('loading').classList.add('hidden');
+            alert('Có lỗi xảy ra khi tìm kiếm. Vui lòng thử lại.');
+        }
+    });
+
+    function displayResults(vehicle) {
+        // Fill in data
+        document.getElementById('result_bien_so').textContent = vehicle.bien_so || '-';
+        document.getElementById('result_loai_xe').textContent = vehicle.loai_xe || '-';
+        document.getElementById('result_so_khung').textContent = vehicle.so_khung || '-';
+        document.getElementById('result_so_may').textContent = vehicle.so_may || '-';
+        document.getElementById('result_trang_thai').textContent = vehicle.trang_thai_xe || '-';
+        document.getElementById('result_ten').textContent = vehicle.ten || '-';
+        document.getElementById('result_giay_to').textContent = vehicle.loai_giay_to || '-';
+        document.getElementById('result_so_giay_to').textContent = vehicle.so_giay_to || '-';
+        document.getElementById('result_sdt').textContent = vehicle.so_dien_thoai || '-';
+        document.getElementById('result_khu_pho').textContent = vehicle.khu_pho || '-';
+        document.getElementById('result_dia_chi_dk').textContent = vehicle.dia_chi_dang_ky_xe || '-';
+        document.getElementById('result_dia_chi_tt').textContent = vehicle.dia_chi_thuong_tru || '-';
+        document.getElementById('result_noi_o').textContent = vehicle.noi_o_hien_tai || '-';
+
+        // Show results
+        document.getElementById('results').classList.remove('hidden');
+    }
+
+    function confirmCorrect() {
+        // Determine form based on vehicle type (biển xanh = 1, biển trắng/vàng = 6)
+        const mauBien = document.getElementById('result_bien_so').textContent;
+        const loaiMau = mauBien.includes('B') ? 1 : 6;  // Simple logic, can be improved
+        window.location.href = `/yeu-cau/mau-${loaiMau}?bien_so=${currentBienSo}`;
+    }
+
+    function showFormOptions() {
+        document.getElementById('formModal').classList.remove('hidden');
+    }
+
+    function closeFormModal() {
+        document.getElementById('formModal').classList.add('hidden');
+    }
+
+    function goToForm(mau) {
+        window.location.href = `/yeu-cau/mau-${mau}?bien_so=${currentBienSo}`;
+    }
+
+    function submitNewVehicle() {
+        // For new vehicle not in list (Form 5 or 10)
+        window.location.href = `/yeu-cau/mau-5?bien_so=${currentBienSo}`;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip3 install:*)",
+      "Bash(python3:*)",
+      "Bash(curl:*)",
+      "Bash(rm:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(pkill:*)",
+      "Bash(sqlite3:*)",
+      "Bash(pip3 freeze:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

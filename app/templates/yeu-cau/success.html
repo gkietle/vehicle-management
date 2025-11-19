@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+        <div class="bg-green-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+            <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Gửi yêu cầu thành công!</h2>
+        <p class="text-gray-600 mb-6">Yêu cầu của bạn đã được ghi nhận và sẽ được xử lý sớm nhất.</p>
+
+        <div class="bg-gray-50 rounded-lg p-6 mb-8">
+            <p class="text-sm text-gray-600 mb-2">Mã số yêu cầu của bạn:</p>
+            <p class="text-2xl font-bold text-blue-600">{{ request_id }}</p>
+        </div>
+
+        <p class="text-sm text-gray-600 mb-8">
+            Vui lòng lưu lại mã số này để theo dõi trạng thái xử lý.
+        </p>
+
+        <div class="flex space-x-4 justify-center">
+            <a href="/tra-cuu" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                Tra cứu thêm
+            </a>
+            <a href="/" class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-semibold">
+                Về trang chủ
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
