@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-6">
+    <h2 class="text-3xl font-bold text-gray-800">Tra cứu trạng thái yêu cầu</h2>
+    <p class="text-gray-600 mt-2">Nhập mã số yêu cầu để kiểm tra trạng thái</p>
+</div>
+
+<!-- Search Form -->
+<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+    <form id="searchForm" class="flex gap-4">
+        <div class="flex-1">
+            <input
+                type="text"
+                id="requestId"
+                placeholder="Nhập mã số yêu cầu (vd: REQ-20251119-001)"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                required
+            >
+        </div>
+        <button
+            type="submit"
+            class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+        >
+            Tra cứu
+        </button>
+    </form>
+</div>
+
+<!-- Result Container -->
+<div id="resultContainer" style="display: none;">
+    <!-- Result will be inserted here -->
+</div>
+
+<script>
+document.getElementById('searchForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const requestId = document.getElementById('requestId').value.trim();
+    const resultContainer = document.getElementById('resultContainer');
+
+    if (!requestId) {
+        alert('Vui lòng nhập mã số yêu cầu');
+        return;
+    }
+
+    // Show loading
+    resultContainer.innerHTML = `
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+            <div class="flex justify-center items-center">
+                <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="ml-3 text-gray-600">Đang tìm kiếm...</span>
+            </div>
+        </div>
+    `;
+    resultContainer.style.display = 'block';
+
+    try {
+        const response = await fetch(`/api/request/status/` + requestId);
+        const data = await response.json();
+
+        if (data.success && data.request) {
+            const req = data.request;
+
+            // Status badge colors
+            const statusColors = {
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'approved': 'bg-green-100 text-green-800',
+                'rejected': 'bg-red-100 text-red-800',
+                'processed': 'bg-blue-100 text-blue-800'
+            };
+
+            const statusText = {
+                'pending': 'Đang chờ xử lý',
+                'approved': 'Đã duyệt',
+                'rejected': 'Từ chối',
+                'processed': 'Đã hoàn thành'
+            };
+
+            let html = `
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800">Mã yêu cầu: ` + req.id + `</h3>
+                            <p class="text-gray-600 text-sm mt-1">Ngày tạo: ` + req.ngay_tao + `</p>
+                        </div>
+                        <span class="px-4 py-2 rounded-full text-sm font-semibold ` + (statusColors[req.trang_thai] || 'bg-gray-100 text-gray-800') + `">
+                            ` + (statusText[req.trang_thai] || req.trang_thai) + `
+                        </span>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <h4 class="font-semibold text-gray-700 mb-3">Thông tin xe</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-gray-600">Biển số:</span>
+                                <span class="font-semibold text-gray-800 ml-2">` + req.bien_so + `</span>
+                            </div>
+                            ` + (req.loai_xe ? `
+                            <div>
+                                <span class="text-gray-600">Loại xe:</span>
+                                <span class="text-gray-800 ml-2">` + req.loai_xe + `</span>
+                            </div>
+                            ` : '') + `
+                            ` + (req.chu_xe ? `
+                            <div>
+                                <span class="text-gray-600">Chủ xe:</span>
+                                <span class="text-gray-800 ml-2">` + req.chu_xe + `</span>
+                            </div>
+                            ` : '') + `
+                        </div>
+                    </div>
+
+                    ` + (req.nguoi_duyet ? `
+                    <div class="border-t mt-4 pt-4">
+                        <h4 class="font-semibold text-gray-700 mb-3">Thông tin xử lý</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-gray-600">Người xử lý:</span>
+                                <span class="text-gray-800 ml-2">` + req.nguoi_duyet + `</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Ngày xử lý:</span>
+                                <span class="text-gray-800 ml-2">` + (req.ngay_duyet || 'Chưa xử lý') + `</span>
+                            </div>
+                        </div>
+                        ` + (req.ly_do_tu_choi ? `
+                        <div class="mt-3">
+                            <span class="text-gray-600">Lý do từ chối:</span>
+                            <p class="text-red-600 mt-1">` + req.ly_do_tu_choi + `</p>
+                        </div>
+                        ` : '') + `
+                    </div>
+                    ` : '') + `
+
+                    ` + (req.ghi_chu ? `
+                    <div class="border-t mt-4 pt-4">
+                        <h4 class="font-semibold text-gray-700 mb-2">Ghi chú</h4>
+                        <p class="text-gray-800">` + req.ghi_chu + `</p>
+                    </div>
+                    ` : '') + `
+                </div>
+            `;
+
+            resultContainer.innerHTML = html;
+        } else {
+            resultContainer.innerHTML = `
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">Không tìm thấy yêu cầu</h3>
+                            <div class="mt-2 text-sm text-yellow-700">
+                                <p>Không tìm thấy yêu cầu với mã số: <strong>` + requestId + `</strong></p>
+                                <p class="mt-1">Vui lòng kiểm tra lại mã số yêu cầu.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        resultContainer.innerHTML = `
+            <div class="bg-red-50 border-l-4 border-red-400 p-6 rounded-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Lỗi tra cứu</h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <p>Có lỗi xảy ra khi tra cứu yêu cầu. Vui lòng thử lại sau.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

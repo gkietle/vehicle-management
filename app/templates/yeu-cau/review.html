@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-6">
+    <h2 class="text-3xl font-bold text-gray-800">Kiểm tra lại thông tin</h2>
+    <p class="text-gray-600 mt-2">Vui lòng kiểm tra kỹ thông tin trước khi gửi yêu cầu</p>
+</div>
+
+<!-- Review Card -->
+<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+        {{ form_name }}
+    </h3>
+
+    <!-- Vehicle Info Section -->
+    <div class="mb-6">
+        <h4 class="font-semibold text-gray-700 mb-3">Thông tin xe</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Biển số xe:</span>
+                <span class="text-gray-800">{{ bien_so }}</span>
+            </div>
+            {% if loai_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Loại xe:</span>
+                <span class="text-gray-800">{{ loai_xe }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Owner Info Section -->
+    {% if chu_xe or dia_chi_chu_xe or so_dien_thoai_chu_xe %}
+    <div class="mb-6">
+        <h4 class="font-semibold text-gray-700 mb-3">Thông tin chủ xe</h4>
+        <div class="grid grid-cols-1 gap-4">
+            {% if chu_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Chủ xe:</span>
+                <span class="text-gray-800">{{ chu_xe }}</span>
+            </div>
+            {% endif %}
+            {% if dia_chi_chu_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Địa chỉ:</span>
+                <span class="text-gray-800">{{ dia_chi_chu_xe }}</span>
+            </div>
+            {% endif %}
+            {% if so_dien_thoai_chu_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số điện thoại:</span>
+                <span class="text-gray-800">{{ so_dien_thoai_chu_xe }}</span>
+            </div>
+            {% endif %}
+            {% if ma_so_thue_chu_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Mã số thuế:</span>
+                <span class="text-gray-800">{{ ma_so_thue_chu_xe }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Buyer Info Section (for transfer forms) -->
+    {% if ten_nguoi_mua %}
+    <div class="mb-6">
+        <h4 class="font-semibold text-gray-700 mb-3">Thông tin người mua</h4>
+        <div class="grid grid-cols-1 gap-4">
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Tên người mua:</span>
+                <span class="text-gray-800">{{ ten_nguoi_mua }}</span>
+            </div>
+            {% if dia_chi_nguoi_mua %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Địa chỉ:</span>
+                <span class="text-gray-800">{{ dia_chi_nguoi_mua }}</span>
+            </div>
+            {% endif %}
+            {% if so_cccd_nguoi_mua %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số CCCD:</span>
+                <span class="text-gray-800">{{ so_cccd_nguoi_mua }}</span>
+            </div>
+            {% endif %}
+            {% if so_dien_thoai_nguoi_mua %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số điện thoại:</span>
+                <span class="text-gray-800">{{ so_dien_thoai_nguoi_mua }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Vehicle Details Section -->
+    {% if so_khung or so_may %}
+    <div class="mb-6">
+        <h4 class="font-semibold text-gray-700 mb-3">Chi tiết xe</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% if so_khung %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số khung:</span>
+                <span class="text-gray-800">{{ so_khung }}</span>
+            </div>
+            {% endif %}
+            {% if so_may %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số máy:</span>
+                <span class="text-gray-800">{{ so_may }}</span>
+            </div>
+            {% endif %}
+            {% if tinh_trang_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Tình trạng xe:</span>
+                <span class="text-gray-800">{{ tinh_trang_xe }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Notes Section -->
+    {% if ghi_chu %}
+    <div class="mb-6">
+        <h4 class="font-semibold text-gray-700 mb-3">Ghi chú</h4>
+        <div class="bg-gray-50 p-4 rounded">
+            <p class="text-gray-800 whitespace-pre-wrap">{{ ghi_chu }}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Action Buttons -->
+<div class="flex gap-4">
+    <button onclick="history.back()" 
+            class="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-medium">
+        ← Chỉnh sửa
+    </button>
+    <button onclick="submitRequest()" 
+            class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+        Xác nhận và gửi yêu cầu
+    </button>
+</div>
+
+<!-- Hidden form to store data -->
+<form id="submitForm" action="/api/request/create" method="POST" style="display: none;">
+    <input type="hidden" name="loai_mau" value="{{ loai_mau }}">
+    <input type="hidden" name="bien_so" value="{{ bien_so }}">
+    <input type="hidden" name="loai_xe" value="{{ loai_xe }}">
+    <input type="hidden" name="chu_xe" value="{{ chu_xe }}">
+    <input type="hidden" name="dia_chi_chu_xe" value="{{ dia_chi_chu_xe }}">
+    <input type="hidden" name="so_dien_thoai_chu_xe" value="{{ so_dien_thoai_chu_xe }}">
+    <input type="hidden" name="ma_so_thue_chu_xe" value="{{ ma_so_thue_chu_xe }}">
+    <input type="hidden" name="ten_nguoi_mua" value="{{ ten_nguoi_mua }}">
+    <input type="hidden" name="dia_chi_nguoi_mua" value="{{ dia_chi_nguoi_mua }}">
+    <input type="hidden" name="so_cccd_nguoi_mua" value="{{ so_cccd_nguoi_mua }}">
+    <input type="hidden" name="so_dien_thoai_nguoi_mua" value="{{ so_dien_thoai_nguoi_mua }}">
+    <input type="hidden" name="so_khung" value="{{ so_khung }}">
+    <input type="hidden" name="so_may" value="{{ so_may }}">
+    <input type="hidden" name="tinh_trang_xe" value="{{ tinh_trang_xe }}">
+    <input type="hidden" name="ghi_chu" value="{{ ghi_chu }}">
+</form>
+
+<script>
+async function submitRequest() {
+    const form = document.getElementById('submitForm');
+    const formData = new FormData(form);
+
+    // Convert FormData to JSON
+    const data = {};
+    formData.forEach((value, key) => {
+        data[key] = value;
+    });
+
+    try {
+        const response = await fetch('/api/request/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Redirect to success page with request ID
+            window.location.href = `/yeu-cau/thanh-cong?request_id=${result.request_id}`;
+        } else {
+            alert('Lỗi: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi gửi yêu cầu');
+    }
+}
+</script>
+{% endblock %}

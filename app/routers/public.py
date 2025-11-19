@@ -105,6 +105,53 @@ async def yeu_cau_form(request: Request, loai_mau: int, bien_so: str = ""):
     )
 
 
+@router.post("/yeu-cau/review")
+async def review_request(request: Request):
+    """Review page before submitting request"""
+    # Get form data
+    form_data = await request.form()
+
+    # Form template names
+    form_templates = {
+        1: "Xe và chủ xe đúng với danh sách",
+        2: "Có chủ xe nhưng không có xe tại địa bàn",
+        3: "Có xe nhưng không có chủ xe tại địa bàn",
+        4: "Không có xe và chủ xe tại địa bàn",
+        5: "Xe không nằm trong danh sách",
+        6: "Xe và chủ xe đúng với danh sách (Biển trắng/vàng)",
+        7: "Có chủ xe nhưng không có xe tại địa bàn (Biển trắng/vàng)",
+        8: "Có xe nhưng không có chủ xe tại địa bàn (Biển trắng/vàng)",
+        9: "Không có xe và chủ xe tại địa bàn (Biển trắng/vàng)",
+        10: "Xe không nằm trong danh sách (Biển trắng/vàng)"
+    }
+
+    loai_mau = int(form_data.get("loai_mau", 1))
+
+    return templates.TemplateResponse(
+        "yeu-cau/review.html",
+        {
+            "request": request,
+            "title": "Kiểm tra lại thông tin",
+            "form_name": form_templates.get(loai_mau, ""),
+            "loai_mau": loai_mau,
+            "bien_so": form_data.get("bien_so", ""),
+            "loai_xe": form_data.get("loai_xe", ""),
+            "chu_xe": form_data.get("chu_xe", ""),
+            "dia_chi_chu_xe": form_data.get("dia_chi_chu_xe", ""),
+            "so_dien_thoai_chu_xe": form_data.get("so_dien_thoai_chu_xe", ""),
+            "ma_so_thue_chu_xe": form_data.get("ma_so_thue_chu_xe", ""),
+            "ten_nguoi_mua": form_data.get("ten_nguoi_mua", ""),
+            "dia_chi_nguoi_mua": form_data.get("dia_chi_nguoi_mua", ""),
+            "so_cccd_nguoi_mua": form_data.get("so_cccd_nguoi_mua", ""),
+            "so_dien_thoai_nguoi_mua": form_data.get("so_dien_thoai_nguoi_mua", ""),
+            "so_khung": form_data.get("so_khung", ""),
+            "so_may": form_data.get("so_may", ""),
+            "tinh_trang_xe": form_data.get("tinh_trang_xe", ""),
+            "ghi_chu": form_data.get("ghi_chu", ""),
+        }
+    )
+
+
 @router.post("/api/request/create")
 async def create_request(request_data: RequestCreate) -> RequestResponse:
     """
@@ -148,3 +195,51 @@ async def request_success(request: Request, request_id: str = ""):
             "request_id": request_id
         }
     )
+
+
+@router.get("/tra-cuu-yeu-cau", response_class=HTMLResponse)
+async def tra_cuu_yeu_cau_page(request: Request):
+    """Request status lookup page"""
+    return templates.TemplateResponse(
+        "tra-cuu-yeu-cau.html",
+        {
+            "request": request,
+            "title": "Tra cứu trạng thái yêu cầu"
+        }
+    )
+
+
+@router.get("/api/request/status/{request_id}")
+async def get_request_status(request_id: str):
+    """Get request status by ID"""
+    try:
+        req = request_service.get_request_by_id(request_id)
+
+        if req:
+            return {
+                "success": True,
+                "request": {
+                    "id": req.id,
+                    "bien_so": req.bien_so,
+                    "loai_xe": req.loai_xe,
+                    "chu_xe": req.chu_xe,
+                    "ngay_tao": req.ngay_tao.strftime("%d/%m/%Y %H:%M") if req.ngay_tao else "",
+                    "trang_thai": req.trang_thai,
+                    "nguoi_duyet": req.nguoi_duyet,
+                    "ngay_duyet": req.ngay_duyet.strftime("%d/%m/%Y %H:%M") if req.ngay_duyet else None,
+                    "ly_do_tu_choi": req.ly_do_tu_choi,
+                    "ghi_chu": req.ghi_chu
+                }
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Không tìm thấy yêu cầu"
+            }
+
+    except Exception as e:
+        logger.error(f"Error getting request status: {e}")
+        return {
+            "success": False,
+            "message": f"Lỗi khi tra cứu: {str(e)}"
+        }

@@ -180,7 +180,7 @@
                     type="submit"
                     class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
                 >
-                    Gửi yêu cầu
+                    Tiếp tục →
                 </button>
                 <a
                     href="/tra-cuu"
@@ -194,35 +194,14 @@
 </div>
 
 <script>
-    document.getElementById('requestForm').addEventListener('submit', async function(e) {
+    document.getElementById('requestForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData);
-
-        // Convert loai_mau to integer
-        data.loai_mau = parseInt(data.loai_mau);
-
-        try {
-            const response = await fetch('/api/request/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                window.location.href = `/yeu-cau/thanh-cong?request_id=${result.request_id}`;
-            } else {
-                alert('Lỗi: ' + result.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại.');
-        }
+        // Submit to review page instead of directly creating request
+        const form = this;
+        form.action = '/yeu-cau/review';
+        form.method = 'POST';
+        form.submit();
     });
 </script>
 {% endblock %}
