@@ -1,40 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-6xl mx-auto">
     <!-- Page Header -->
-    <div class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-2">Tra cứu biển số xe</h2>
-        <p class="text-gray-600">Nhập biển số xe để tra cứu thông tin đăng ký</p>
+    <div class="mb-4 sm:mb-6 lg:mb-8">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Tra cứu biển số xe</h2>
+        <p class="text-sm sm:text-base text-gray-600">Nhập biển số xe để tra cứu thông tin đăng ký</p>
     </div>
 
     <!-- Search Form -->
-    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-        <form id="searchForm" class="space-y-6">
+    <div class="bg-white rounded-lg shadow-lg p-5 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+        <form id="searchForm" class="space-y-4 sm:space-y-6">
             <div>
-                <label for="bien_so" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="bien_so" class="block text-base sm:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
                     Biển số xe <span class="text-red-500">*</span>
                 </label>
-                <div class="flex space-x-4">
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <input
                         type="text"
                         id="bien_so"
                         name="bien_so"
-                        placeholder="Ví dụ: 60B100129"
-                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg uppercase"
+                        placeholder="VÍ DU: 60B100129"
+                        class="flex-1 px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base sm:text-lg font-semibold uppercase"
                         required
                     >
                     <button
                         type="submit"
-                        class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center"
+                        class="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center justify-center text-base sm:text-lg"
                     >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                         Tra cứu
                     </button>
                 </div>
-                <p class="mt-2 text-sm text-gray-500">Nhập đúng biển số xe không dấu, viết hoa (VD: 60B100129, 60AA10113)</p>
+                <p class="mt-3 text-sm sm:text-base text-gray-500 leading-relaxed">Nhập đúng biển số xe không dấu, viết hoa<br class="sm:hidden"> (VD: 60B100129, 60AA10113)</p>
             </div>
         </form>
     </div>
@@ -61,105 +61,105 @@
 
     <!-- Search Results -->
     <div id="results" class="hidden">
-        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
-            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                <svg class="w-7 h-7 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white rounded-lg shadow-lg p-5 sm:p-6 lg:p-8 mb-6">
+            <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
+                <svg class="w-6 h-6 sm:w-7 sm:h-7 text-green-600 mr-2 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 Thông tin phương tiện
             </h3>
 
-            <div class="grid md:grid-cols-2 gap-6">
+            <div class="grid sm:grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                    <h4 class="font-semibold text-gray-700 mb-4 text-lg border-b pb-2">Thông tin xe</h4>
-                    <div class="space-y-3">
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Biển số:</span>
-                            <span id="result_bien_so" class="font-semibold text-gray-900"></span>
+                    <h4 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Thông tin xe</h4>
+                    <div class="space-y-2 sm:space-y-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Biển số:</span>
+                            <span id="result_bien_so" class="text-base sm:text-base font-bold text-gray-900 mt-1 sm:mt-0"></span>
                         </div>
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Loại xe:</span>
-                            <span id="result_loai_xe" class="text-gray-900"></span>
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Loại xe:</span>
+                            <span id="result_loai_xe" class="text-sm sm:text-base text-gray-900 mt-1 sm:mt-0"></span>
                         </div>
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Số khung:</span>
-                            <span id="result_so_khung" class="text-gray-900 text-sm"></span>
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Số khung:</span>
+                            <span id="result_so_khung" class="text-sm text-gray-900 mt-1 sm:mt-0 break-all"></span>
                         </div>
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Số máy:</span>
-                            <span id="result_so_may" class="text-gray-900 text-sm"></span>
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Số máy:</span>
+                            <span id="result_so_may" class="text-sm text-gray-900 mt-1 sm:mt-0 break-all"></span>
                         </div>
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Trạng thái:</span>
-                            <span id="result_trang_thai" class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"></span>
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Trạng thái:</span>
+                            <span id="result_trang_thai" class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm font-medium mt-1 sm:mt-0"></span>
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <h4 class="font-semibold text-gray-700 mb-4 text-lg border-b pb-2">Thông tin chủ xe</h4>
-                    <div class="space-y-3">
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Họ tên:</span>
-                            <span id="result_ten" class="font-semibold text-gray-900"></span>
+                    <h4 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Thông tin chủ xe</h4>
+                    <div class="space-y-2 sm:space-y-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Họ tên:</span>
+                            <span id="result_ten" class="text-base sm:text-base font-bold text-gray-900 mt-1 sm:mt-0"></span>
                         </div>
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Giấy tờ:</span>
-                            <span id="result_giay_to" class="text-gray-900 text-sm"></span>
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Giấy tờ:</span>
+                            <span id="result_giay_to" class="text-sm sm:text-base text-gray-900 mt-1 sm:mt-0"></span>
                         </div>
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Số giấy tờ:</span>
-                            <span id="result_so_giay_to" class="text-gray-900 text-sm"></span>
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Số giấy tờ:</span>
+                            <span id="result_so_giay_to" class="text-sm text-gray-900 mt-1 sm:mt-0 break-all"></span>
                         </div>
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Điện thoại:</span>
-                            <span id="result_sdt" class="text-gray-900"></span>
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Điện thoại:</span>
+                            <span id="result_sdt" class="text-sm sm:text-base text-gray-900 mt-1 sm:mt-0"></span>
                         </div>
-                        <div class="flex">
-                            <span class="text-gray-600 w-32">Khu phố:</span>
-                            <span id="result_khu_pho" class="text-gray-900"></span>
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <span class="text-sm sm:text-base text-gray-600 sm:w-32 font-medium sm:font-normal">Khu phố:</span>
+                            <span id="result_khu_pho" class="text-sm sm:text-base text-gray-900 mt-1 sm:mt-0"></span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-6">
-                <h4 class="font-semibold text-gray-700 mb-3 text-lg border-b pb-2">Địa chỉ</h4>
-                <div class="space-y-2">
-                    <div>
-                        <span class="text-gray-600">Địa chỉ đăng ký:</span>
-                        <span id="result_dia_chi_dk" class="ml-2 text-gray-900"></span>
+            <div class="mt-4 sm:mt-6">
+                <h4 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 border-b pb-2">Địa chỉ</h4>
+                <div class="space-y-2 sm:space-y-3">
+                    <div class="flex flex-col">
+                        <span class="text-sm sm:text-base text-gray-600 font-medium">Địa chỉ đăng ký:</span>
+                        <span id="result_dia_chi_dk" class="text-sm sm:text-base text-gray-900 mt-1"></span>
                     </div>
-                    <div>
-                        <span class="text-gray-600">Địa chỉ thường trú:</span>
-                        <span id="result_dia_chi_tt" class="ml-2 text-gray-900"></span>
+                    <div class="flex flex-col">
+                        <span class="text-sm sm:text-base text-gray-600 font-medium">Địa chỉ thường trú:</span>
+                        <span id="result_dia_chi_tt" class="text-sm sm:text-base text-gray-900 mt-1"></span>
                     </div>
-                    <div>
-                        <span class="text-gray-600">Nơi ở hiện tại:</span>
-                        <span id="result_noi_o" class="ml-2 text-gray-900"></span>
+                    <div class="flex flex-col">
+                        <span class="text-sm sm:text-base text-gray-600 font-medium">Nơi ở hiện tại:</span>
+                        <span id="result_noi_o" class="text-sm sm:text-base text-gray-900 mt-1"></span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="bg-gray-50 rounded-lg p-6">
-            <h4 class="font-bold text-gray-800 mb-4">Thông tin có chính xác không?</h4>
-            <div class="grid md:grid-cols-2 gap-4">
+        <div class="bg-gray-50 rounded-lg p-5 sm:p-6">
+            <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-4">Thông tin có chính xác không?</h4>
+            <div class="grid sm:grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <button
                     onclick="confirmCorrect()"
-                    class="px-6 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold flex items-center justify-center"
+                    class="w-full px-6 py-4 sm:py-5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold flex items-center justify-center text-base sm:text-lg"
                 >
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Thông tin chính xác
                 </button>
                 <button
                     onclick="showFormOptions()"
-                    class="px-6 py-4 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-semibold flex items-center justify-center"
+                    class="w-full px-6 py-4 sm:py-5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-semibold flex items-center justify-center text-base sm:text-lg"
                 >
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                     </svg>
                     Cần cập nhật thông tin
@@ -169,14 +169,14 @@
     </div>
 
     <!-- Form Selection Modal -->
-    <div id="formModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4 max-h-screen overflow-y-auto">
-            <h3 class="text-2xl font-bold text-gray-800 mb-6">Chọn loại yêu cầu cập nhật</h3>
+    <div id="formModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg p-5 sm:p-6 lg:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">Chọn loại yêu cầu cập nhật</h3>
 
-            <div class="space-y-3">
-                <a href="#" onclick="goToForm(1)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
-                    <div class="font-semibold text-gray-800">Mẫu 1: Xe và chủ xe đúng (Biển xanh)</div>
-                    <p class="text-sm text-gray-600 mt-1">Xác nhận thông tin chính xác</p>
+            <div class="space-y-2 sm:space-y-3">
+                <a href="#" onclick="goToForm(1)" class="block p-4 sm:p-5 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition active:bg-blue-100">
+                    <div class="text-sm sm:text-base font-semibold text-gray-800">Mẫu 1: Xe và chủ xe đúng (Biển xanh)</div>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Xác nhận thông tin chính xác</p>
                 </a>
 
                 <a href="#" onclick="goToForm(2)" class="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
