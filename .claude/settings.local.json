@@ -9,7 +9,10 @@
       "Bash(xargs kill:*)",
       "Bash(pkill:*)",
       "Bash(sqlite3:*)",
-      "Bash(pip3 freeze:*)"
+      "Bash(pip3 freeze:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

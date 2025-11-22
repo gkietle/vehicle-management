@@ -411,7 +411,7 @@ class BatchService:
             # Process each sheet
             for sheet_name in xls.sheet_names:
                 # Only process sheet named '26'
-                if sheet_name != '26':
+                if '26' not in sheet_name:
                     logger.info(f"Skipping sheet '{sheet_name}' (only importing sheet '26')")
                     continue
 
