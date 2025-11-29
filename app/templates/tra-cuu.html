@@ -211,14 +211,22 @@
 
         <!-- Request History Section -->
         <div id="requestHistory" class="bg-white rounded-lg shadow-lg p-5 sm:p-6 mb-6 hidden">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                Lịch sử yêu cầu đã gửi
-            </h3>
-            <p class="text-gray-600 mb-4">Danh sách các yêu cầu cập nhật thông tin bạn đã gửi cho biển số này:</p>
-            <div id="requestHistoryContent" class="space-y-3"></div>
+            <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleRequestHistory()">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
+                    <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Lịch sử yêu cầu đã gửi
+                    <span id="requestCount" class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"></span>
+                </h3>
+                <button class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    <span id="toggleText">Xem chi tiết</span>
+                    <svg id="toggleIcon" class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="requestHistoryContent" class="space-y-3 hidden"></div>
         </div>
 
         <!-- Action Buttons -->
@@ -498,7 +506,16 @@
         const container = document.getElementById('requestHistoryContent');
         container.innerHTML = '';
 
-        requests.forEach(req => {
+        // Sort requests: latest version first within each form type
+        // Priority: loai_mau asc, version desc (latest version on top)
+        const sortedRequests = requests.sort((a, b) => {
+            if (a.loai_mau !== b.loai_mau) {
+                return a.loai_mau - b.loai_mau; // Sort by form type ascending
+            }
+            return b.version - a.version; // Then by version descending (latest first)
+        });
+
+        sortedRequests.forEach(req => {
             const card = document.createElement('div');
             card.className = 'border-2 border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition cursor-pointer';
 
@@ -537,7 +554,29 @@
             container.appendChild(card);
         });
 
+        // Update request count
+        document.getElementById('requestCount').textContent = `${requests.length} yêu cầu`;
+
+        // Show the section
         document.getElementById('requestHistory').classList.remove('hidden');
+    }
+
+    function toggleRequestHistory() {
+        const content = document.getElementById('requestHistoryContent');
+        const toggleText = document.getElementById('toggleText');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        if (content.classList.contains('hidden')) {
+            // Expand
+            content.classList.remove('hidden');
+            toggleText.textContent = 'Thu gọn';
+            toggleIcon.classList.add('rotate-180');
+        } else {
+            // Collapse
+            content.classList.add('hidden');
+            toggleText.textContent = 'Xem chi tiết';
+            toggleIcon.classList.remove('rotate-180');
+        }
     }
 
     function getStatusBadge(status) {
