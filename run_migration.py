@@ -26,6 +26,7 @@ def run_migration():
 
     # Define new columns to add
     new_columns = [
+        ("batch_id", "INTEGER"),  # Link to batch
         ("mau_bien", "VARCHAR(50)"),
         ("ngay_cap_cccd_chu_xe", "VARCHAR(50)"),
         ("so_gplx_chu_xe", "VARCHAR(100)"),
@@ -79,8 +80,20 @@ def run_migration():
             # Create indexes for PostgreSQL
             if not is_sqlite:
                 logger.info("Creating indexes...")
+                conn.execute(text("CREATE INDEX IF NOT EXISTS idx_requests_batch_id ON requests(batch_id)"))
                 conn.execute(text("CREATE INDEX IF NOT EXISTS idx_requests_mau_bien ON requests(mau_bien)"))
                 conn.execute(text("CREATE INDEX IF NOT EXISTS idx_requests_so_gplx ON requests(so_gplx_chu_xe)"))
+
+                # Add foreign key constraint for batch_id (PostgreSQL only)
+                logger.info("Adding foreign key constraint...")
+                try:
+                    conn.execute(text("""
+                        ALTER TABLE requests
+                        ADD CONSTRAINT fk_requests_batch_id
+                        FOREIGN KEY (batch_id) REFERENCES batches(id)
+                    """))
+                except Exception as e:
+                    logger.warning(f"Foreign key constraint may already exist: {e}")
 
             logger.info("✅ Migration completed successfully!")
             return True

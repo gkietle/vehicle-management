@@ -37,6 +37,7 @@ class RequestDB(Base):
 
     id = Column(String, primary_key=True, index=True)
     ngay_tao = Column(DateTime, nullable=False)
+    batch_id = Column(Integer, ForeignKey("batches.id"), index=True)  # Link to batch
 
     # Vehicle info
     bien_so = Column(String, nullable=False, index=True)
@@ -87,6 +88,9 @@ class RequestDB(Base):
     ngay_duyet = Column(DateTime)  # Date of approval/rejection
     ly_do_tu_choi = Column(Text)  # Rejection reason
 
+    # Relationship
+    batch = relationship("BatchDB", back_populates="requests")
+
 
 class BatchDB(Base):
     """SQLAlchemy model for data batches"""
@@ -100,6 +104,7 @@ class BatchDB(Base):
 
     # Relationship
     data_files = relationship("DataFileDB", back_populates="batch", cascade="all, delete-orphan")
+    requests = relationship("RequestDB", back_populates="batch")
 
 
 class DataFileDB(Base):

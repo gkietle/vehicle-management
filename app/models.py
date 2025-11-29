@@ -83,6 +83,8 @@ class RequestInDB(RequestBase):
     """Model for request in database"""
     id: str
     ngay_tao: datetime
+    batch_id: Optional[int] = None  # Batch ID
+    batch_name: Optional[str] = None  # Batch name (for display)
     trang_thai: Literal["pending", "approved", "rejected", "processed"] = "pending"
     nguoi_duyet: Optional[str] = None  # Admin username
     ngay_duyet: Optional[datetime] = None  # Approval date

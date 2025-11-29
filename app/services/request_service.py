@@ -3,7 +3,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from app.config import settings
 from app.models import RequestCreate, RequestInDB
-from app.database import SessionLocal, RequestDB
+from app.database import SessionLocal, RequestDB, BatchDB
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,22 +22,43 @@ class RequestService:
 
     def _db_to_pydantic(self, db_request: RequestDB) -> RequestInDB:
         """Convert database model to Pydantic model"""
+        # Get batch name if batch relationship is loaded
+        batch_name = None
+        if db_request.batch:
+            batch_name = db_request.batch.name
+
         return RequestInDB(
             id=db_request.id,
             ngay_tao=db_request.ngay_tao,
+            batch_id=db_request.batch_id,
+            batch_name=batch_name,
             bien_so=db_request.bien_so,
             loai_mau=db_request.loai_mau,
             loai_xe=db_request.loai_xe,
+            mau_bien=db_request.mau_bien,
             chu_xe=db_request.chu_xe,
             dia_chi_chu_xe=db_request.dia_chi_chu_xe,
             so_dien_thoai_chu_xe=db_request.so_dien_thoai_chu_xe,
             ma_so_thue_chu_xe=db_request.ma_so_thue_chu_xe,
+            ngay_cap_cccd_chu_xe=db_request.ngay_cap_cccd_chu_xe,
+            so_gplx_chu_xe=db_request.so_gplx_chu_xe,
+            ngay_cap_gplx_chu_xe=db_request.ngay_cap_gplx_chu_xe,
+            co_quan_cap_gplx_chu_xe=db_request.co_quan_cap_gplx_chu_xe,
             ten_nguoi_mua=db_request.ten_nguoi_mua,
             dia_chi_nguoi_mua=db_request.dia_chi_nguoi_mua,
             so_cccd_nguoi_mua=db_request.so_cccd_nguoi_mua,
+            ngay_cap_cccd_nguoi_mua=db_request.ngay_cap_cccd_nguoi_mua,
             so_dien_thoai_nguoi_mua=db_request.so_dien_thoai_nguoi_mua,
+            ban_sao_chuyen_nhuong=db_request.ban_sao_chuyen_nhuong,
             so_khung=db_request.so_khung,
             so_may=db_request.so_may,
+            ten_nguoi_dang_su_dung=db_request.ten_nguoi_dang_su_dung,
+            dia_chi_nguoi_dang_su_dung=db_request.dia_chi_nguoi_dang_su_dung,
+            ten_nguoi_ban=db_request.ten_nguoi_ban,
+            dia_chi_nguoi_ban=db_request.dia_chi_nguoi_ban,
+            so_dien_thoai_nguoi_ban=db_request.so_dien_thoai_nguoi_ban,
+            so_cccd_nguoi_ban=db_request.so_cccd_nguoi_ban,
+            ngay_cap_cccd_nguoi_ban=db_request.ngay_cap_cccd_nguoi_ban,
             tinh_trang_xe=db_request.tinh_trang_xe,
             ghi_chu=db_request.ghi_chu,
             trang_thai=db_request.trang_thai,
@@ -61,24 +82,46 @@ class RequestService:
             # Generate unique ID
             request_id = self._generate_request_id(db)
 
+            # Get active batch
+            active_batch = db.query(BatchDB).filter(BatchDB.is_active == True).first()
+            batch_id = active_batch.id if active_batch else None
+
+            if not batch_id:
+                logger.warning("No active batch found, creating request without batch")
+
             # Create database record
             db_request = RequestDB(
                 id=request_id,
                 ngay_tao=datetime.now(),
                 trang_thai="pending",
+                batch_id=batch_id,
                 bien_so=request.bien_so,
                 loai_mau=request.loai_mau,
                 loai_xe=request.loai_xe,
+                mau_bien=request.mau_bien,
                 chu_xe=request.chu_xe,
                 dia_chi_chu_xe=request.dia_chi_chu_xe,
                 so_dien_thoai_chu_xe=request.so_dien_thoai_chu_xe,
                 ma_so_thue_chu_xe=request.ma_so_thue_chu_xe,
+                ngay_cap_cccd_chu_xe=request.ngay_cap_cccd_chu_xe,
+                so_gplx_chu_xe=request.so_gplx_chu_xe,
+                ngay_cap_gplx_chu_xe=request.ngay_cap_gplx_chu_xe,
+                co_quan_cap_gplx_chu_xe=request.co_quan_cap_gplx_chu_xe,
                 ten_nguoi_mua=request.ten_nguoi_mua,
                 dia_chi_nguoi_mua=request.dia_chi_nguoi_mua,
                 so_cccd_nguoi_mua=request.so_cccd_nguoi_mua,
+                ngay_cap_cccd_nguoi_mua=request.ngay_cap_cccd_nguoi_mua,
                 so_dien_thoai_nguoi_mua=request.so_dien_thoai_nguoi_mua,
+                ban_sao_chuyen_nhuong=request.ban_sao_chuyen_nhuong,
                 so_khung=request.so_khung,
                 so_may=request.so_may,
+                ten_nguoi_dang_su_dung=request.ten_nguoi_dang_su_dung,
+                dia_chi_nguoi_dang_su_dung=request.dia_chi_nguoi_dang_su_dung,
+                ten_nguoi_ban=request.ten_nguoi_ban,
+                dia_chi_nguoi_ban=request.dia_chi_nguoi_ban,
+                so_dien_thoai_nguoi_ban=request.so_dien_thoai_nguoi_ban,
+                so_cccd_nguoi_ban=request.so_cccd_nguoi_ban,
+                ngay_cap_cccd_nguoi_ban=request.ngay_cap_cccd_nguoi_ban,
                 tinh_trang_xe=request.tinh_trang_xe,
                 ghi_chu=request.ghi_chu
             )
@@ -111,22 +154,29 @@ class RequestService:
         sequence = today_count + 1
         return f"REQ_{date_str}_{sequence:04d}"
 
-    def get_all_requests(self, loai_mau: Optional[int] = None) -> List[RequestInDB]:
+    def get_all_requests(self, loai_mau: Optional[int] = None, batch_id: Optional[int] = None) -> List[RequestInDB]:
         """
-        Get all requests, optionally filtered by form type
+        Get all requests, optionally filtered by form type and/or batch
 
         Args:
             loai_mau: Form type (1-10) to filter by
+            batch_id: Batch ID to filter by (if None, get all)
 
         Returns:
             List of requests
         """
         db = self._get_db()
         try:
-            query = db.query(RequestDB).order_by(RequestDB.ngay_tao.desc())
+            from sqlalchemy.orm import joinedload
+
+            # Eager load batch relationship
+            query = db.query(RequestDB).options(joinedload(RequestDB.batch)).order_by(RequestDB.ngay_tao.desc())
 
             if loai_mau is not None:
                 query = query.filter(RequestDB.loai_mau == loai_mau)
+
+            if batch_id is not None:
+                query = query.filter(RequestDB.batch_id == batch_id)
 
             db_requests = query.all()
             return [self._db_to_pydantic(req) for req in db_requests]

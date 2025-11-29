@@ -83,17 +83,26 @@ async def export_requests(
     loai_mau: int,
     username: str = Depends(verify_admin)
 ):
-    """Export requests to Excel for specific form"""
+    """Export requests to Excel for specific form (from active batch only)"""
     try:
         from app.utils.export import export_requests_to_excel
 
-        # Get requests for this form
-        requests = request_service.get_all_requests(loai_mau=loai_mau)
+        # Get active batch
+        active_batch = batch_service.get_active_batch()
+
+        if not active_batch:
+            raise HTTPException(
+                status_code=400,
+                detail="Không có đợt dữ liệu nào đang kích hoạt"
+            )
+
+        # Get requests for this form from active batch only
+        requests = request_service.get_all_requests(loai_mau=loai_mau, batch_id=active_batch.id)
 
         if not requests:
             raise HTTPException(
                 status_code=404,
-                detail=f"Không có yêu cầu nào cho mẫu {loai_mau}"
+                detail=f"Không có yêu cầu nào cho mẫu {loai_mau} trong đợt {active_batch.name}"
             )
 
         # Export to Excel
@@ -101,7 +110,7 @@ async def export_requests(
 
         return FileResponse(
             path=output_file,
-            filename=f"Mau_{loai_mau}_YeuCau_{len(requests)}.xlsx",
+            filename=f"Mau_{loai_mau}_{active_batch.name}_YeuCau_{len(requests)}.xlsx",
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
