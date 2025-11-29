@@ -275,10 +275,13 @@ async def get_request_status(request_id: str):
                 "request": {
                     "id": req.id,
                     "bien_so": req.bien_so,
+                    "loai_mau": req.loai_mau,
                     "loai_xe": req.loai_xe,
                     "chu_xe": req.chu_xe,
                     "ngay_tao": req.ngay_tao.strftime("%d/%m/%Y %H:%M") if req.ngay_tao else "",
                     "trang_thai": req.trang_thai,
+                    "version": req.version,
+                    "is_latest_approved": req.is_latest_approved,
                     "nguoi_duyet": req.nguoi_duyet,
                     "ngay_duyet": req.ngay_duyet.strftime("%d/%m/%Y %H:%M") if req.ngay_duyet else None,
                     "ly_do_tu_choi": req.ly_do_tu_choi,
@@ -293,6 +296,88 @@ async def get_request_status(request_id: str):
 
     except Exception as e:
         logger.error(f"Error getting request status: {e}")
+        return {
+            "success": False,
+            "message": f"Lỗi khi tra cứu: {str(e)}"
+        }
+
+
+@router.get("/api/requests/bien-so/{bien_so}")
+async def get_requests_by_license_plate(bien_so: str):
+    """Get all requests for a specific license plate"""
+    try:
+        requests = request_service.get_requests_by_bien_so(bien_so)
+
+        return {
+            "success": True,
+            "bien_so": bien_so,
+            "total": len(requests),
+            "requests": [
+                {
+                    "id": req.id,
+                    "loai_mau": req.loai_mau,
+                    "ngay_tao": req.ngay_tao.strftime("%d/%m/%Y %H:%M") if req.ngay_tao else "",
+                    "trang_thai": req.trang_thai,
+                    "version": req.version,
+                    "is_latest_approved": req.is_latest_approved,
+                    "batch_name": req.batch_name,
+                    "nguoi_duyet": req.nguoi_duyet,
+                    "ngay_duyet": req.ngay_duyet.strftime("%d/%m/%Y %H:%M") if req.ngay_duyet else None,
+                    "ly_do_tu_choi": req.ly_do_tu_choi
+                }
+                for req in requests
+            ]
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting requests for {bien_so}: {e}")
+        return {
+            "success": False,
+            "message": f"Lỗi khi tra cứu: {str(e)}"
+        }
+
+
+@router.get("/api/requests/cccd/{cccd}")
+async def get_requests_by_cccd(cccd: str):
+    """Get all requests for vehicles owned by this CCCD"""
+    try:
+        requests = request_service.get_requests_by_cccd(cccd)
+
+        # Group by bien_so
+        from collections import defaultdict
+        by_plate = defaultdict(list)
+        for req in requests:
+            by_plate[req.bien_so].append(req)
+
+        return {
+            "success": True,
+            "cccd": cccd,
+            "total_requests": len(requests),
+            "total_vehicles": len(by_plate),
+            "vehicles": [
+                {
+                    "bien_so": bien_so,
+                    "requests": [
+                        {
+                            "id": req.id,
+                            "loai_mau": req.loai_mau,
+                            "ngay_tao": req.ngay_tao.strftime("%d/%m/%Y %H:%M") if req.ngay_tao else "",
+                            "trang_thai": req.trang_thai,
+                            "version": req.version,
+                            "is_latest_approved": req.is_latest_approved,
+                            "batch_name": req.batch_name,
+                            "nguoi_duyet": req.nguoi_duyet,
+                            "ngay_duyet": req.ngay_duyet.strftime("%d/%m/%Y %H:%M") if req.ngay_duyet else None
+                        }
+                        for req in reqs
+                    ]
+                }
+                for bien_so, reqs in by_plate.items()
+            ]
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting requests for CCCD {cccd}: {e}")
         return {
             "success": False,
             "message": f"Lỗi khi tra cứu: {str(e)}"

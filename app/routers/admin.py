@@ -96,13 +96,17 @@ async def export_requests(
                 detail="Không có đợt dữ liệu nào đang kích hoạt"
             )
 
-        # Get requests for this form from active batch only
-        requests = request_service.get_all_requests(loai_mau=loai_mau, batch_id=active_batch.id)
+        # Get LATEST APPROVED requests for this form from active batch only
+        requests = request_service.get_all_requests(
+            loai_mau=loai_mau,
+            batch_id=active_batch.id,
+            latest_approved_only=True  # Only export latest approved versions
+        )
 
         if not requests:
             raise HTTPException(
                 status_code=404,
-                detail=f"Không có yêu cầu nào cho mẫu {loai_mau} trong đợt {active_batch.name}"
+                detail=f"Không có yêu cầu đã duyệt (version mới nhất) nào cho mẫu {loai_mau} trong đợt {active_batch.name}"
             )
 
         # Export to Excel

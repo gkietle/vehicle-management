@@ -62,6 +62,8 @@ class RequestService:
             tinh_trang_xe=db_request.tinh_trang_xe,
             ghi_chu=db_request.ghi_chu,
             trang_thai=db_request.trang_thai,
+            version=db_request.version if hasattr(db_request, 'version') else 1,
+            is_latest_approved=db_request.is_latest_approved if hasattr(db_request, 'is_latest_approved') else False,
             nguoi_duyet=db_request.nguoi_duyet,
             ngay_duyet=db_request.ngay_duyet,
             ly_do_tu_choi=db_request.ly_do_tu_choi
@@ -89,11 +91,23 @@ class RequestService:
             if not batch_id:
                 logger.warning("No active batch found, creating request without batch")
 
+            # Calculate version number for this bien_so + loai_mau
+            from sqlalchemy import func
+            max_version = db.query(func.max(RequestDB.version)).filter(
+                RequestDB.bien_so == request.bien_so,
+                RequestDB.loai_mau == request.loai_mau
+            ).scalar()
+            version = (max_version or 0) + 1
+
+            logger.info(f"Creating request version {version} for {request.bien_so} mẫu {request.loai_mau}")
+
             # Create database record
             db_request = RequestDB(
                 id=request_id,
                 ngay_tao=datetime.now(),
                 trang_thai="pending",
+                version=version,
+                is_latest_approved=False,
                 batch_id=batch_id,
                 bien_so=request.bien_so,
                 loai_mau=request.loai_mau,
@@ -154,13 +168,14 @@ class RequestService:
         sequence = today_count + 1
         return f"REQ_{date_str}_{sequence:04d}"
 
-    def get_all_requests(self, loai_mau: Optional[int] = None, batch_id: Optional[int] = None) -> List[RequestInDB]:
+    def get_all_requests(self, loai_mau: Optional[int] = None, batch_id: Optional[int] = None, latest_approved_only: bool = False) -> List[RequestInDB]:
         """
         Get all requests, optionally filtered by form type and/or batch
 
         Args:
             loai_mau: Form type (1-10) to filter by
             batch_id: Batch ID to filter by (if None, get all)
+            latest_approved_only: If True, only return latest approved version for each bien_so + loai_mau
 
         Returns:
             List of requests
@@ -178,6 +193,9 @@ class RequestService:
             if batch_id is not None:
                 query = query.filter(RequestDB.batch_id == batch_id)
 
+            if latest_approved_only:
+                query = query.filter(RequestDB.is_latest_approved == True)
+
             db_requests = query.all()
             return [self._db_to_pydantic(req) for req in db_requests]
 
@@ -192,6 +210,56 @@ class RequestService:
             if db_request:
                 return self._db_to_pydantic(db_request)
             return None
+
+        finally:
+            db.close()
+
+    def get_requests_by_bien_so(self, bien_so: str) -> List[RequestInDB]:
+        """
+        Get all requests for a specific license plate (all versions)
+
+        Args:
+            bien_so: License plate number
+
+        Returns:
+            List of all requests for this plate, ordered by version desc
+        """
+        db = self._get_db()
+        try:
+            from sqlalchemy.orm import joinedload
+
+            db_requests = db.query(RequestDB)\
+                .options(joinedload(RequestDB.batch))\
+                .filter(RequestDB.bien_so == bien_so)\
+                .order_by(RequestDB.loai_mau, RequestDB.version.desc())\
+                .all()
+
+            return [self._db_to_pydantic(req) for req in db_requests]
+
+        finally:
+            db.close()
+
+    def get_requests_by_cccd(self, cccd: str) -> List[RequestInDB]:
+        """
+        Get all requests for vehicles owned by this CCCD
+
+        Args:
+            cccd: CCCD number
+
+        Returns:
+            List of all requests for vehicles with this CCCD as owner
+        """
+        db = self._get_db()
+        try:
+            from sqlalchemy.orm import joinedload
+
+            db_requests = db.query(RequestDB)\
+                .options(joinedload(RequestDB.batch))\
+                .filter(RequestDB.ma_so_thue_chu_xe == cccd)\
+                .order_by(RequestDB.bien_so, RequestDB.loai_mau, RequestDB.version.desc())\
+                .all()
+
+            return [self._db_to_pydantic(req) for req in db_requests]
 
         finally:
             db.close()
@@ -270,9 +338,21 @@ class RequestService:
             db_request.trang_thai = "approved"
             db_request.nguoi_duyet = admin_username
             db_request.ngay_duyet = datetime.now()
+
+            # Mark this as the latest approved version for this bien_so + loai_mau
+            # First, unmark all other requests for same bien_so + loai_mau
+            db.query(RequestDB).filter(
+                RequestDB.bien_so == db_request.bien_so,
+                RequestDB.loai_mau == db_request.loai_mau,
+                RequestDB.id != request_id
+            ).update({"is_latest_approved": False})
+
+            # Then mark this one as latest approved
+            db_request.is_latest_approved = True
+
             db.commit()
 
-            logger.info(f"Request {request_id} approved by {admin_username}")
+            logger.info(f"Request {request_id} v{db_request.version} approved by {admin_username} and marked as latest approved")
             return True
 
         except Exception as e:

@@ -86,6 +86,8 @@ class RequestInDB(RequestBase):
     batch_id: Optional[int] = None  # Batch ID
     batch_name: Optional[str] = None  # Batch name (for display)
     trang_thai: Literal["pending", "approved", "rejected", "processed"] = "pending"
+    version: int = 1  # Version number for same bien_so + loai_mau
+    is_latest_approved: bool = False  # True if this is the latest approved version
     nguoi_duyet: Optional[str] = None  # Admin username
     ngay_duyet: Optional[datetime] = None  # Approval date
     ly_do_tu_choi: Optional[str] = None  # Rejection reason

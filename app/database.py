@@ -84,6 +84,8 @@ class RequestDB(Base):
 
     # Status and approval
     trang_thai = Column(String, default="pending", index=True)  # pending, approved, rejected, processed
+    version = Column(Integer, default=1, index=True)  # Version number for same bien_so + loai_mau
+    is_latest_approved = Column(Boolean, default=False, index=True)  # True if this is the latest approved version
     nguoi_duyet = Column(String)  # Admin username who approved/rejected
     ngay_duyet = Column(DateTime)  # Date of approval/rejection
     ly_do_tu_choi = Column(Text)  # Rejection reason
