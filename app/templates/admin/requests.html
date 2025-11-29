@@ -41,6 +41,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã YC</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Biển số</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại mẫu</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Version</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Đợt dữ liệu</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chủ xe</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày tạo</th>
@@ -58,6 +59,18 @@
                             <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                                 Mẫu {{ req.loai_mau }}
                             </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs font-medium">
+                                    v{{ req.version }}
+                                </span>
+                                {% if req.is_latest_approved %}
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">
+                                    ✓ LATEST
+                                </span>
+                                {% endif %}
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             {% if req.batch_name %}
@@ -112,7 +125,7 @@
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                        <td colspan="9" class="px-6 py-8 text-center text-gray-500">
                             Chưa có yêu cầu nào
                         </td>
                     </tr>
