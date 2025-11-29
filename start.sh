@@ -17,6 +17,10 @@ fi
 echo "Initializing database..."
 python3 -c "from app.database import init_db; init_db()"
 
+# Run migration to add new columns (safe to run multiple times)
+echo "Running database migrations..."
+python3 run_migration.py || echo "Migration already applied or skipped"
+
 # Start the application
 echo "Starting web server..."
 exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
