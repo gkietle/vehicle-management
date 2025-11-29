@@ -80,12 +80,20 @@
                 <span class="font-semibold">{{ req.bien_so }}</span>
             </div>
             <div class="flex justify-between">
+                <span class="text-gray-600">Màu biển:</span>
+                <span class="font-semibold">{{ req.mau_bien or '-' }}</span>
+            </div>
+            <div class="flex justify-between">
                 <span class="text-gray-600">Loại biểu mẫu:</span>
                 <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">Mẫu {{ req.loai_mau }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600">Loại xe:</span>
                 <span class="font-semibold">{{ req.loai_xe or '-' }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Đợt dữ liệu:</span>
+                <span class="font-semibold">{{ req.batch_name or '-' }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600">Ngày tạo:</span>
@@ -95,37 +103,29 @@
     </div>
 
     <!-- Vehicle Identification -->
-    {% if req.so_khung or req.so_may %}
     <div class="bg-white rounded-lg shadow-lg p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Thông tin xe</h3>
         <div class="space-y-3">
-            {% if req.so_khung %}
             <div class="flex justify-between">
                 <span class="text-gray-600">Số khung:</span>
-                <span class="font-semibold font-mono">{{ req.so_khung }}</span>
+                <span class="font-semibold font-mono">{{ req.so_khung or '-' }}</span>
             </div>
-            {% endif %}
-            {% if req.so_may %}
             <div class="flex justify-between">
                 <span class="text-gray-600">Số máy:</span>
-                <span class="font-semibold font-mono">{{ req.so_may }}</span>
+                <span class="font-semibold font-mono">{{ req.so_may or '-' }}</span>
             </div>
-            {% endif %}
-            {% if req.tinh_trang_xe %}
             <div class="flex justify-between">
                 <span class="text-gray-600">Tình trạng xe:</span>
-                <span class="font-semibold">{{ req.tinh_trang_xe }}</span>
+                <span class="font-semibold">{{ req.tinh_trang_xe or '-' }}</span>
             </div>
-            {% endif %}
         </div>
     </div>
-    {% endif %}
 </div>
 
 <!-- Owner Information -->
 <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-    <h3 class="text-lg font-semibold text-gray-800 mb-4">Thông tin chủ xe</h3>
-    <div class="grid md:grid-cols-2 gap-4">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Thông tin chủ xe</h3>
+    <div class="grid md:grid-cols-3 gap-4">
         <div>
             <label class="text-gray-600 text-sm">Tên chủ xe:</label>
             <p class="font-semibold">{{ req.chu_xe or '-' }}</p>
@@ -134,39 +134,59 @@
             <label class="text-gray-600 text-sm">Số điện thoại:</label>
             <p class="font-semibold">{{ req.so_dien_thoai_chu_xe or '-' }}</p>
         </div>
-        <div class="md:col-span-2">
+        <div>
+            <label class="text-gray-600 text-sm">Số CCCD/Mã số thuế:</label>
+            <p class="font-semibold font-mono">{{ req.ma_so_thue_chu_xe or '-' }}</p>
+        </div>
+        <div>
+            <label class="text-gray-600 text-sm">Ngày cấp CCCD:</label>
+            <p class="font-semibold">{{ req.ngay_cap_cccd_chu_xe or '-' }}</p>
+        </div>
+        <div>
+            <label class="text-gray-600 text-sm">Số GPLX:</label>
+            <p class="font-semibold font-mono">{{ req.so_gplx_chu_xe or '-' }}</p>
+        </div>
+        <div>
+            <label class="text-gray-600 text-sm">Ngày cấp GPLX:</label>
+            <p class="font-semibold">{{ req.ngay_cap_gplx_chu_xe or '-' }}</p>
+        </div>
+        <div class="md:col-span-3">
+            <label class="text-gray-600 text-sm">Cơ quan cấp GPLX:</label>
+            <p class="font-semibold">{{ req.co_quan_cap_gplx_chu_xe or '-' }}</p>
+        </div>
+        <div class="md:col-span-3">
             <label class="text-gray-600 text-sm">Địa chỉ:</label>
             <p class="font-semibold">{{ req.dia_chi_chu_xe or '-' }}</p>
         </div>
-        {% if req.ma_so_thue_chu_xe %}
-        <div>
-            <label class="text-gray-600 text-sm">Mã số thuế:</label>
-            <p class="font-semibold font-mono">{{ req.ma_so_thue_chu_xe }}</p>
-        </div>
-        {% endif %}
     </div>
 </div>
 
-<!-- Buyer Information (if applicable) -->
-{% if req.ten_nguoi_mua %}
+<!-- Buyer/Transfer Information (if applicable) -->
+{% if req.ten_nguoi_mua or req.loai_mau in [2, 3, 4, 7, 8, 9] %}
 <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-    <h3 class="text-lg font-semibold text-gray-800 mb-4">Thông tin người mua</h3>
-    <div class="grid md:grid-cols-2 gap-4">
-        <div>
-            <label class="text-gray-600 text-sm">Tên người mua:</label>
-            <p class="font-semibold">{{ req.ten_nguoi_mua }}</p>
+    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Thông tin người mua/đang sử dụng</h3>
+    <div class="grid md:grid-cols-3 gap-4">
+        <div class="md:col-span-2">
+            <label class="text-gray-600 text-sm">Tên người mua/đang sử dụng:</label>
+            <p class="font-semibold">{{ req.ten_nguoi_mua or '-' }}</p>
         </div>
         <div>
             <label class="text-gray-600 text-sm">Số điện thoại:</label>
             <p class="font-semibold">{{ req.so_dien_thoai_nguoi_mua or '-' }}</p>
         </div>
-        {% if req.so_cccd_nguoi_mua %}
         <div>
-            <label class="text-gray-600 text-sm">Số CCCD:</label>
-            <p class="font-semibold font-mono">{{ req.so_cccd_nguoi_mua }}</p>
+            <label class="text-gray-600 text-sm">Số CCCD/Mã số thuế:</label>
+            <p class="font-semibold font-mono">{{ req.so_cccd_nguoi_mua or '-' }}</p>
         </div>
-        {% endif %}
-        <div class="md:col-span-2">
+        <div>
+            <label class="text-gray-600 text-sm">Ngày cấp CCCD:</label>
+            <p class="font-semibold">{{ req.ngay_cap_cccd_nguoi_mua or '-' }}</p>
+        </div>
+        <div>
+            <label class="text-gray-600 text-sm">Bản sao chứng từ chuyển nhượng:</label>
+            <p class="font-semibold">{{ req.ban_sao_chuyen_nhuong or '-' }}</p>
+        </div>
+        <div class="md:col-span-3">
             <label class="text-gray-600 text-sm">Địa chỉ:</label>
             <p class="font-semibold">{{ req.dia_chi_nguoi_mua or '-' }}</p>
         </div>
@@ -174,9 +194,56 @@
 </div>
 {% endif %}
 
+<!-- Form 10 Specific: Seller and Current User Information -->
+{% if req.loai_mau == 10 %}
+<div class="grid md:grid-cols-2 gap-6 mb-6">
+    <!-- Current User Information -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Người đang sử dụng xe</h3>
+        <div class="space-y-3">
+            <div>
+                <label class="text-gray-600 text-sm">Tên:</label>
+                <p class="font-semibold">{{ req.ten_nguoi_dang_su_dung or '-' }}</p>
+            </div>
+            <div>
+                <label class="text-gray-600 text-sm">Địa chỉ:</label>
+                <p class="font-semibold">{{ req.dia_chi_nguoi_dang_su_dung or '-' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seller Information -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Người bán xe</h3>
+        <div class="space-y-3">
+            <div>
+                <label class="text-gray-600 text-sm">Tên:</label>
+                <p class="font-semibold">{{ req.ten_nguoi_ban or '-' }}</p>
+            </div>
+            <div>
+                <label class="text-gray-600 text-sm">Địa chỉ:</label>
+                <p class="font-semibold">{{ req.dia_chi_nguoi_ban or '-' }}</p>
+            </div>
+            <div>
+                <label class="text-gray-600 text-sm">Số điện thoại:</label>
+                <p class="font-semibold">{{ req.so_dien_thoai_nguoi_ban or '-' }}</p>
+            </div>
+            <div>
+                <label class="text-gray-600 text-sm">Số CCCD/Mã số thuế:</label>
+                <p class="font-semibold font-mono">{{ req.so_cccd_nguoi_ban or '-' }}</p>
+            </div>
+            <div>
+                <label class="text-gray-600 text-sm">Ngày cấp CCCD:</label>
+                <p class="font-semibold">{{ req.ngay_cap_cccd_nguoi_ban or '-' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Additional Notes -->
 {% if req.ghi_chu %}
-<div class="bg-white rounded-lg shadow-lg p-6">
+<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
     <h3 class="text-lg font-semibold text-gray-800 mb-4">Ghi chú</h3>
     <p class="text-gray-700">{{ req.ghi_chu }}</p>
 </div>
