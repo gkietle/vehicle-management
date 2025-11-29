@@ -36,20 +36,38 @@ class RequestBase(BaseModel):
     bien_so: str
     loai_mau: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] = Field(..., description="Loại mẫu (1-10)")
     loai_xe: Optional[str] = None
+    mau_bien: Optional[str] = None
     chu_xe: Optional[str] = None
     dia_chi_chu_xe: Optional[str] = None
     so_dien_thoai_chu_xe: Optional[str] = None
     ma_so_thue_chu_xe: Optional[str] = None
 
-    # For forms 2, 3, 4
+    # GPLX and CCCD info for owner
+    ngay_cap_cccd_chu_xe: Optional[str] = None
+    so_gplx_chu_xe: Optional[str] = None
+    ngay_cap_gplx_chu_xe: Optional[str] = None
+    co_quan_cap_gplx_chu_xe: Optional[str] = None
+
+    # For forms 2, 3, 4, 7, 8, 9 (ownership changes)
     ten_nguoi_mua: Optional[str] = None
     dia_chi_nguoi_mua: Optional[str] = None
     so_cccd_nguoi_mua: Optional[str] = None
+    ngay_cap_cccd_nguoi_mua: Optional[str] = None
     so_dien_thoai_nguoi_mua: Optional[str] = None
+    ban_sao_chuyen_nhuong: Optional[str] = None
 
     # For form 5, 10 (new vehicle)
     so_khung: Optional[str] = None
     so_may: Optional[str] = None
+
+    # For form 10 specifically (seller and current user info)
+    ten_nguoi_dang_su_dung: Optional[str] = None
+    dia_chi_nguoi_dang_su_dung: Optional[str] = None
+    ten_nguoi_ban: Optional[str] = None
+    dia_chi_nguoi_ban: Optional[str] = None
+    so_dien_thoai_nguoi_ban: Optional[str] = None
+    so_cccd_nguoi_ban: Optional[str] = None
+    ngay_cap_cccd_nguoi_ban: Optional[str] = None
 
     # Additional info
     tinh_trang_xe: Optional[str] = None

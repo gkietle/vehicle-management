@@ -24,7 +24,16 @@
             </div>
 
             <!-- Common fields -->
-            <div class="grid md:grid-cols-2 gap-4">
+            <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Màu biển</label>
+                    <select name="mau_bien" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="">Chọn màu biển</option>
+                        <option value="Xanh" {% if vehicle and vehicle.mau_bien == '1' %}selected{% endif %}>Xanh</option>
+                        <option value="Trắng/Vàng" {% if vehicle and vehicle.mau_bien == '0' %}selected{% endif %}>Trắng/Vàng</option>
+                    </select>
+                </div>
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Loại xe</label>
                     <input
@@ -68,7 +77,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Mã số thuế/CCCD chủ xe</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Số CCCD/mã số thuế chủ xe</label>
                     <input
                         type="text"
                         name="ma_so_thue_chu_xe"
@@ -77,6 +86,73 @@
                     >
                 </div>
             </div>
+
+            <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Ngày cấp CCCD</label>
+                    <input
+                        type="date"
+                        name="ngay_cap_cccd_chu_xe"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Số GPLX của chủ xe</label>
+                    <input
+                        type="text"
+                        name="so_gplx_chu_xe"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Ngày cấp GPLX</label>
+                    <input
+                        type="date"
+                        name="ngay_cap_gplx_chu_xe"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    >
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Cơ quan cấp GPLX</label>
+                <input
+                    type="text"
+                    name="co_quan_cap_gplx_chu_xe"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    placeholder="VD: Cục Cảnh sát giao thông"
+                >
+            </div>
+
+            {% if loai_mau == 6 %}
+            <!-- For form 6: Vehicle identification fields -->
+            <div class="bg-yellow-50 p-4 rounded-lg">
+                <h4 class="font-semibold text-gray-800 mb-3">Thông tin định danh xe</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Số khung của xe</label>
+                        <input
+                            type="text"
+                            name="so_khung"
+                            value="{% if vehicle %}{{ vehicle.so_khung }}{% endif %}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Số máy của xe</label>
+                        <input
+                            type="text"
+                            name="so_may"
+                            value="{% if vehicle %}{{ vehicle.so_may }}{% endif %}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        >
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             {% if loai_mau in [2, 3, 4, 7, 8, 9] %}
             <!-- For forms about ownership changes -->
@@ -102,12 +178,21 @@
                         >
                     </div>
 
-                    <div class="grid md:grid-cols-2 gap-4">
+                    <div class="grid md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Số CCCD/mã số thuế</label>
                             <input
                                 type="text"
                                 name="so_cccd_nguoi_mua"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Ngày cấp CCCD</label>
+                            <input
+                                type="date"
+                                name="ngay_cap_cccd_nguoi_mua"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg"
                             >
                         </div>
@@ -120,6 +205,15 @@
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg"
                             >
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bản sao chứng từ chuyển nhượng (nếu có)</label>
+                        <select name="ban_sao_chuyen_nhuong" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">Chọn</option>
+                            <option value="Có">Có</option>
+                            <option value="Không">Không</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -147,6 +241,97 @@
                             name="so_may"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg"
                         >
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if loai_mau == 10 %}
+            <!-- For form 10 specifically: Seller and current user info -->
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h4 class="font-semibold text-gray-800 mb-3">Thông tin người đang sử dụng xe</h4>
+                <div class="space-y-3">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tên người đang sử dụng xe</label>
+                            <input
+                                type="text"
+                                name="ten_nguoi_dang_su_dung"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ người đang sử dụng</label>
+                            <input
+                                type="text"
+                                name="dia_chi_nguoi_dang_su_dung"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-orange-50 p-4 rounded-lg">
+                <h4 class="font-semibold text-gray-800 mb-3">Thông tin người bán xe</h4>
+                <div class="space-y-3">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tên người bán xe</label>
+                            <input
+                                type="text"
+                                name="ten_nguoi_ban"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ người bán</label>
+                            <input
+                                type="text"
+                                name="dia_chi_nguoi_ban"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Số điện thoại người bán</label>
+                            <input
+                                type="text"
+                                name="so_dien_thoai_nguoi_ban"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Số CCCD/mã số thuế người bán</label>
+                            <input
+                                type="text"
+                                name="so_cccd_nguoi_ban"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Ngày cấp CCCD người bán</label>
+                            <input
+                                type="date"
+                                name="ngay_cap_cccd_nguoi_ban"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bản sao chứng từ chuyển nhượng (nếu có)</label>
+                        <select name="ban_sao_chuyen_nhuong" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">Chọn</option>
+                            <option value="Có">Có</option>
+                            <option value="Không">Không</option>
+                        </select>
                     </div>
                 </div>
             </div>

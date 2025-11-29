@@ -42,6 +42,7 @@ class RequestDB(Base):
     bien_so = Column(String, nullable=False, index=True)
     loai_mau = Column(Integer, nullable=False)
     loai_xe = Column(String)
+    mau_bien = Column(String)
 
     # Owner info
     chu_xe = Column(String)
@@ -49,15 +50,32 @@ class RequestDB(Base):
     so_dien_thoai_chu_xe = Column(String)
     ma_so_thue_chu_xe = Column(String)
 
-    # Buyer info (for transfer forms)
+    # GPLX and CCCD info for owner
+    ngay_cap_cccd_chu_xe = Column(String)
+    so_gplx_chu_xe = Column(String)
+    ngay_cap_gplx_chu_xe = Column(String)
+    co_quan_cap_gplx_chu_xe = Column(String)
+
+    # Buyer info (for transfer forms 2, 3, 4, 7, 8, 9)
     ten_nguoi_mua = Column(String)
     dia_chi_nguoi_mua = Column(Text)
     so_cccd_nguoi_mua = Column(String)
+    ngay_cap_cccd_nguoi_mua = Column(String)
     so_dien_thoai_nguoi_mua = Column(String)
+    ban_sao_chuyen_nhuong = Column(String)
 
     # Vehicle identification
     so_khung = Column(String)
     so_may = Column(String)
+
+    # For form 10 specifically (seller and current user info)
+    ten_nguoi_dang_su_dung = Column(String)
+    dia_chi_nguoi_dang_su_dung = Column(Text)
+    ten_nguoi_ban = Column(String)
+    dia_chi_nguoi_ban = Column(Text)
+    so_dien_thoai_nguoi_ban = Column(String)
+    so_cccd_nguoi_ban = Column(String)
+    ngay_cap_cccd_nguoi_ban = Column(String)
 
     # Additional info
     tinh_trang_xe = Column(String)
