@@ -506,13 +506,21 @@
         const container = document.getElementById('requestHistoryContent');
         container.innerHTML = '';
 
-        // Sort requests: latest version first within each form type
-        // Priority: loai_mau asc, version desc (latest version on top)
+        // Sort requests: ALL latest approved first, then old requests
+        // Priority 1: is_latest_approved (true first)
+        // Priority 2: loai_mau (ascending)
+        // Priority 3: version (descending)
         const sortedRequests = requests.sort((a, b) => {
-            if (a.loai_mau !== b.loai_mau) {
-                return a.loai_mau - b.loai_mau; // Sort by form type ascending
+            // First: Latest approved requests on top
+            if (a.is_latest_approved !== b.is_latest_approved) {
+                return b.is_latest_approved - a.is_latest_approved; // true (1) before false (0)
             }
-            return b.version - a.version; // Then by version descending (latest first)
+            // Second: Sort by form type
+            if (a.loai_mau !== b.loai_mau) {
+                return a.loai_mau - b.loai_mau;
+            }
+            // Third: Sort by version descending
+            return b.version - a.version;
         });
 
         sortedRequests.forEach(req => {
