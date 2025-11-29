@@ -265,28 +265,21 @@ async def tra_cuu_yeu_cau_page(request: Request):
 
 @router.get("/api/request/status/{request_id}")
 async def get_request_status(request_id: str):
-    """Get request status by ID"""
+    """Get request status by ID - returns full request details"""
     try:
         req = request_service.get_request_by_id(request_id)
 
         if req:
+            # Convert to dict and format datetime fields
+            req_dict = req.dict()
+            if req_dict.get('ngay_tao'):
+                req_dict['ngay_tao'] = req.ngay_tao.strftime("%d/%m/%Y %H:%M")
+            if req_dict.get('ngay_duyet'):
+                req_dict['ngay_duyet'] = req.ngay_duyet.strftime("%d/%m/%Y %H:%M")
+
             return {
                 "success": True,
-                "request": {
-                    "id": req.id,
-                    "bien_so": req.bien_so,
-                    "loai_mau": req.loai_mau,
-                    "loai_xe": req.loai_xe,
-                    "chu_xe": req.chu_xe,
-                    "ngay_tao": req.ngay_tao.strftime("%d/%m/%Y %H:%M") if req.ngay_tao else "",
-                    "trang_thai": req.trang_thai,
-                    "version": req.version,
-                    "is_latest_approved": req.is_latest_approved,
-                    "nguoi_duyet": req.nguoi_duyet,
-                    "ngay_duyet": req.ngay_duyet.strftime("%d/%m/%Y %H:%M") if req.ngay_duyet else None,
-                    "ly_do_tu_choi": req.ly_do_tu_choi,
-                    "ghi_chu": req.ghi_chu
-                }
+                "request": req_dict
             }
         else:
             return {
