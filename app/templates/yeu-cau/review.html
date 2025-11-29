@@ -18,22 +18,46 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex">
                 <span class="font-medium text-gray-600 w-40">Biển số xe:</span>
-                <span class="text-gray-800">{{ bien_so }}</span>
+                <span class="text-gray-800 font-bold">{{ bien_so }}</span>
             </div>
+            {% if mau_bien %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Màu biển:</span>
+                <span class="text-gray-800">{{ mau_bien }}</span>
+            </div>
+            {% endif %}
             {% if loai_xe %}
             <div class="flex">
                 <span class="font-medium text-gray-600 w-40">Loại xe:</span>
                 <span class="text-gray-800">{{ loai_xe }}</span>
             </div>
             {% endif %}
+            {% if so_khung %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số khung:</span>
+                <span class="text-gray-800 font-mono text-sm">{{ so_khung }}</span>
+            </div>
+            {% endif %}
+            {% if so_may %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số máy:</span>
+                <span class="text-gray-800 font-mono text-sm">{{ so_may }}</span>
+            </div>
+            {% endif %}
+            {% if tinh_trang_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Tình trạng xe:</span>
+                <span class="text-gray-800">{{ tinh_trang_xe }}</span>
+            </div>
+            {% endif %}
         </div>
     </div>
 
     <!-- Owner Info Section -->
-    {% if chu_xe or dia_chi_chu_xe or so_dien_thoai_chu_xe %}
+    {% if chu_xe or dia_chi_chu_xe or so_dien_thoai_chu_xe or ma_so_thue_chu_xe %}
     <div class="mb-6">
-        <h4 class="font-semibold text-gray-700 mb-3">Thông tin chủ xe</h4>
-        <div class="grid grid-cols-1 gap-4">
+        <h4 class="font-semibold text-gray-700 mb-3 border-t pt-3">Thông tin chủ xe</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             {% if chu_xe %}
             <div class="flex">
                 <span class="font-medium text-gray-600 w-40">Chủ xe:</span>
@@ -41,7 +65,7 @@
             </div>
             {% endif %}
             {% if dia_chi_chu_xe %}
-            <div class="flex">
+            <div class="flex md:col-span-2">
                 <span class="font-medium text-gray-600 w-40">Địa chỉ:</span>
                 <span class="text-gray-800">{{ dia_chi_chu_xe }}</span>
             </div>
@@ -54,25 +78,51 @@
             {% endif %}
             {% if ma_so_thue_chu_xe %}
             <div class="flex">
-                <span class="font-medium text-gray-600 w-40">Mã số thuế:</span>
-                <span class="text-gray-800">{{ ma_so_thue_chu_xe }}</span>
+                <span class="font-medium text-gray-600 w-40">Số CCCD/Mã số thuế:</span>
+                <span class="text-gray-800 font-mono text-sm">{{ ma_so_thue_chu_xe }}</span>
+            </div>
+            {% endif %}
+            {% if ngay_cap_cccd_chu_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Ngày cấp CCCD:</span>
+                <span class="text-gray-800">{{ ngay_cap_cccd_chu_xe }}</span>
+            </div>
+            {% endif %}
+            {% if so_gplx_chu_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số GPLX:</span>
+                <span class="text-gray-800 font-mono text-sm">{{ so_gplx_chu_xe }}</span>
+            </div>
+            {% endif %}
+            {% if ngay_cap_gplx_chu_xe %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Ngày cấp GPLX:</span>
+                <span class="text-gray-800">{{ ngay_cap_gplx_chu_xe }}</span>
+            </div>
+            {% endif %}
+            {% if co_quan_cap_gplx_chu_xe %}
+            <div class="flex md:col-span-2">
+                <span class="font-medium text-gray-600 w-40">Cơ quan cấp GPLX:</span>
+                <span class="text-gray-800">{{ co_quan_cap_gplx_chu_xe }}</span>
             </div>
             {% endif %}
         </div>
     </div>
     {% endif %}
 
-    <!-- Buyer Info Section (for transfer forms) -->
-    {% if ten_nguoi_mua %}
+    <!-- Buyer/Transfer Info Section -->
+    {% if ten_nguoi_mua or dia_chi_nguoi_mua or so_cccd_nguoi_mua %}
     <div class="mb-6">
-        <h4 class="font-semibold text-gray-700 mb-3">Thông tin người mua</h4>
-        <div class="grid grid-cols-1 gap-4">
+        <h4 class="font-semibold text-gray-700 mb-3 border-t pt-3">Thông tin người mua/đang sử dụng</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% if ten_nguoi_mua %}
             <div class="flex">
                 <span class="font-medium text-gray-600 w-40">Tên người mua:</span>
                 <span class="text-gray-800">{{ ten_nguoi_mua }}</span>
             </div>
+            {% endif %}
             {% if dia_chi_nguoi_mua %}
-            <div class="flex">
+            <div class="flex md:col-span-2">
                 <span class="font-medium text-gray-600 w-40">Địa chỉ:</span>
                 <span class="text-gray-800">{{ dia_chi_nguoi_mua }}</span>
             </div>
@@ -80,7 +130,13 @@
             {% if so_cccd_nguoi_mua %}
             <div class="flex">
                 <span class="font-medium text-gray-600 w-40">Số CCCD:</span>
-                <span class="text-gray-800">{{ so_cccd_nguoi_mua }}</span>
+                <span class="text-gray-800 font-mono text-sm">{{ so_cccd_nguoi_mua }}</span>
+            </div>
+            {% endif %}
+            {% if ngay_cap_cccd_nguoi_mua %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Ngày cấp CCCD:</span>
+                <span class="text-gray-800">{{ ngay_cap_cccd_nguoi_mua }}</span>
             </div>
             {% endif %}
             {% if so_dien_thoai_nguoi_mua %}
@@ -89,31 +145,70 @@
                 <span class="text-gray-800">{{ so_dien_thoai_nguoi_mua }}</span>
             </div>
             {% endif %}
+            {% if ban_sao_chuyen_nhuong %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Bản sao chuyển nhượng:</span>
+                <span class="text-gray-800">{{ ban_sao_chuyen_nhuong }}</span>
+            </div>
+            {% endif %}
         </div>
     </div>
     {% endif %}
 
-    <!-- Vehicle Details Section -->
-    {% if so_khung or so_may %}
+    <!-- Form 10: Current User Info -->
+    {% if ten_nguoi_dang_su_dung or dia_chi_nguoi_dang_su_dung %}
     <div class="mb-6">
-        <h4 class="font-semibold text-gray-700 mb-3">Chi tiết xe</h4>
+        <h4 class="font-semibold text-gray-700 mb-3 border-t pt-3">Người đang sử dụng xe</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {% if so_khung %}
+            {% if ten_nguoi_dang_su_dung %}
             <div class="flex">
-                <span class="font-medium text-gray-600 w-40">Số khung:</span>
-                <span class="text-gray-800">{{ so_khung }}</span>
+                <span class="font-medium text-gray-600 w-40">Tên:</span>
+                <span class="text-gray-800">{{ ten_nguoi_dang_su_dung }}</span>
             </div>
             {% endif %}
-            {% if so_may %}
-            <div class="flex">
-                <span class="font-medium text-gray-600 w-40">Số máy:</span>
-                <span class="text-gray-800">{{ so_may }}</span>
+            {% if dia_chi_nguoi_dang_su_dung %}
+            <div class="flex md:col-span-2">
+                <span class="font-medium text-gray-600 w-40">Địa chỉ:</span>
+                <span class="text-gray-800">{{ dia_chi_nguoi_dang_su_dung }}</span>
             </div>
             {% endif %}
-            {% if tinh_trang_xe %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Form 10: Seller Info -->
+    {% if ten_nguoi_ban or dia_chi_nguoi_ban or so_dien_thoai_nguoi_ban or so_cccd_nguoi_ban %}
+    <div class="mb-6">
+        <h4 class="font-semibold text-gray-700 mb-3 border-t pt-3">Người bán xe</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% if ten_nguoi_ban %}
             <div class="flex">
-                <span class="font-medium text-gray-600 w-40">Tình trạng xe:</span>
-                <span class="text-gray-800">{{ tinh_trang_xe }}</span>
+                <span class="font-medium text-gray-600 w-40">Tên:</span>
+                <span class="text-gray-800">{{ ten_nguoi_ban }}</span>
+            </div>
+            {% endif %}
+            {% if dia_chi_nguoi_ban %}
+            <div class="flex md:col-span-2">
+                <span class="font-medium text-gray-600 w-40">Địa chỉ:</span>
+                <span class="text-gray-800">{{ dia_chi_nguoi_ban }}</span>
+            </div>
+            {% endif %}
+            {% if so_dien_thoai_nguoi_ban %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số điện thoại:</span>
+                <span class="text-gray-800">{{ so_dien_thoai_nguoi_ban }}</span>
+            </div>
+            {% endif %}
+            {% if so_cccd_nguoi_ban %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Số CCCD:</span>
+                <span class="text-gray-800 font-mono text-sm">{{ so_cccd_nguoi_ban }}</span>
+            </div>
+            {% endif %}
+            {% if ngay_cap_cccd_nguoi_ban %}
+            <div class="flex">
+                <span class="font-medium text-gray-600 w-40">Ngày cấp CCCD:</span>
+                <span class="text-gray-800">{{ ngay_cap_cccd_nguoi_ban }}</span>
             </div>
             {% endif %}
         </div>
@@ -123,7 +218,7 @@
     <!-- Notes Section -->
     {% if ghi_chu %}
     <div class="mb-6">
-        <h4 class="font-semibold text-gray-700 mb-3">Ghi chú</h4>
+        <h4 class="font-semibold text-gray-700 mb-3 border-t pt-3">Ghi chú</h4>
         <div class="bg-gray-50 p-4 rounded">
             <p class="text-gray-800 whitespace-pre-wrap">{{ ghi_chu }}</p>
         </div>
@@ -133,32 +228,53 @@
 
 <!-- Action Buttons -->
 <div class="flex gap-4">
-    <button onclick="history.back()" 
+    <button onclick="history.back()"
             class="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-medium">
         ← Chỉnh sửa
     </button>
-    <button onclick="submitRequest()" 
+    <button onclick="submitRequest()"
             class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
         Xác nhận và gửi yêu cầu
     </button>
 </div>
 
-<!-- Hidden form to store data -->
+<!-- Hidden form to store ALL data -->
 <form id="submitForm" action="/api/request/create" method="POST" style="display: none;">
     <input type="hidden" name="loai_mau" value="{{ loai_mau }}">
+    <!-- Basic vehicle info -->
     <input type="hidden" name="bien_so" value="{{ bien_so }}">
     <input type="hidden" name="loai_xe" value="{{ loai_xe }}">
+    <input type="hidden" name="mau_bien" value="{{ mau_bien }}">
+    <!-- Owner info -->
     <input type="hidden" name="chu_xe" value="{{ chu_xe }}">
     <input type="hidden" name="dia_chi_chu_xe" value="{{ dia_chi_chu_xe }}">
     <input type="hidden" name="so_dien_thoai_chu_xe" value="{{ so_dien_thoai_chu_xe }}">
     <input type="hidden" name="ma_so_thue_chu_xe" value="{{ ma_so_thue_chu_xe }}">
+    <input type="hidden" name="ngay_cap_cccd_chu_xe" value="{{ ngay_cap_cccd_chu_xe }}">
+    <input type="hidden" name="so_gplx_chu_xe" value="{{ so_gplx_chu_xe }}">
+    <input type="hidden" name="ngay_cap_gplx_chu_xe" value="{{ ngay_cap_gplx_chu_xe }}">
+    <input type="hidden" name="co_quan_cap_gplx_chu_xe" value="{{ co_quan_cap_gplx_chu_xe }}">
+    <!-- Buyer/transfer info -->
     <input type="hidden" name="ten_nguoi_mua" value="{{ ten_nguoi_mua }}">
     <input type="hidden" name="dia_chi_nguoi_mua" value="{{ dia_chi_nguoi_mua }}">
     <input type="hidden" name="so_cccd_nguoi_mua" value="{{ so_cccd_nguoi_mua }}">
+    <input type="hidden" name="ngay_cap_cccd_nguoi_mua" value="{{ ngay_cap_cccd_nguoi_mua }}">
     <input type="hidden" name="so_dien_thoai_nguoi_mua" value="{{ so_dien_thoai_nguoi_mua }}">
+    <input type="hidden" name="ban_sao_chuyen_nhuong" value="{{ ban_sao_chuyen_nhuong }}">
+    <!-- Vehicle details -->
     <input type="hidden" name="so_khung" value="{{ so_khung }}">
     <input type="hidden" name="so_may" value="{{ so_may }}">
     <input type="hidden" name="tinh_trang_xe" value="{{ tinh_trang_xe }}">
+    <!-- Form 10 specific - Current user -->
+    <input type="hidden" name="ten_nguoi_dang_su_dung" value="{{ ten_nguoi_dang_su_dung }}">
+    <input type="hidden" name="dia_chi_nguoi_dang_su_dung" value="{{ dia_chi_nguoi_dang_su_dung }}">
+    <!-- Form 10 specific - Seller -->
+    <input type="hidden" name="ten_nguoi_ban" value="{{ ten_nguoi_ban }}">
+    <input type="hidden" name="dia_chi_nguoi_ban" value="{{ dia_chi_nguoi_ban }}">
+    <input type="hidden" name="so_dien_thoai_nguoi_ban" value="{{ so_dien_thoai_nguoi_ban }}">
+    <input type="hidden" name="so_cccd_nguoi_ban" value="{{ so_cccd_nguoi_ban }}">
+    <input type="hidden" name="ngay_cap_cccd_nguoi_ban" value="{{ ngay_cap_cccd_nguoi_ban }}">
+    <!-- Notes -->
     <input type="hidden" name="ghi_chu" value="{{ ghi_chu }}">
 </form>
 
@@ -174,7 +290,10 @@ async function submitRequest() {
         if (key === 'loai_mau') {
             data[key] = parseInt(value);
         } else {
-            data[key] = value;
+            // Only include non-empty values
+            if (value && value.trim() !== '') {
+                data[key] = value;
+            }
         }
     });
 

@@ -167,19 +167,40 @@ async def review_request(request: Request):
             "title": "Kiểm tra lại thông tin",
             "form_name": form_templates.get(loai_mau, ""),
             "loai_mau": loai_mau,
+            # Basic vehicle info
             "bien_so": form_data.get("bien_so", ""),
             "loai_xe": form_data.get("loai_xe", ""),
+            "mau_bien": form_data.get("mau_bien", ""),
+            # Owner info
             "chu_xe": form_data.get("chu_xe", ""),
             "dia_chi_chu_xe": form_data.get("dia_chi_chu_xe", ""),
             "so_dien_thoai_chu_xe": form_data.get("so_dien_thoai_chu_xe", ""),
             "ma_so_thue_chu_xe": form_data.get("ma_so_thue_chu_xe", ""),
+            "ngay_cap_cccd_chu_xe": form_data.get("ngay_cap_cccd_chu_xe", ""),
+            "so_gplx_chu_xe": form_data.get("so_gplx_chu_xe", ""),
+            "ngay_cap_gplx_chu_xe": form_data.get("ngay_cap_gplx_chu_xe", ""),
+            "co_quan_cap_gplx_chu_xe": form_data.get("co_quan_cap_gplx_chu_xe", ""),
+            # Buyer/transfer info
             "ten_nguoi_mua": form_data.get("ten_nguoi_mua", ""),
             "dia_chi_nguoi_mua": form_data.get("dia_chi_nguoi_mua", ""),
             "so_cccd_nguoi_mua": form_data.get("so_cccd_nguoi_mua", ""),
+            "ngay_cap_cccd_nguoi_mua": form_data.get("ngay_cap_cccd_nguoi_mua", ""),
             "so_dien_thoai_nguoi_mua": form_data.get("so_dien_thoai_nguoi_mua", ""),
+            "ban_sao_chuyen_nhuong": form_data.get("ban_sao_chuyen_nhuong", ""),
+            # Vehicle details
             "so_khung": form_data.get("so_khung", ""),
             "so_may": form_data.get("so_may", ""),
             "tinh_trang_xe": form_data.get("tinh_trang_xe", ""),
+            # Form 10 specific - Current user
+            "ten_nguoi_dang_su_dung": form_data.get("ten_nguoi_dang_su_dung", ""),
+            "dia_chi_nguoi_dang_su_dung": form_data.get("dia_chi_nguoi_dang_su_dung", ""),
+            # Form 10 specific - Seller
+            "ten_nguoi_ban": form_data.get("ten_nguoi_ban", ""),
+            "dia_chi_nguoi_ban": form_data.get("dia_chi_nguoi_ban", ""),
+            "so_dien_thoai_nguoi_ban": form_data.get("so_dien_thoai_nguoi_ban", ""),
+            "so_cccd_nguoi_ban": form_data.get("so_cccd_nguoi_ban", ""),
+            "ngay_cap_cccd_nguoi_ban": form_data.get("ngay_cap_cccd_nguoi_ban", ""),
+            # Notes
             "ghi_chu": form_data.get("ghi_chu", ""),
         }
     )
