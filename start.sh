@@ -21,6 +21,10 @@ python3 -c "from app.database import init_db; init_db()"
 echo "Running database migrations..."
 python3 run_migration.py || echo "Migration already applied or skipped"
 
+# Run version tracking migration (safe to run multiple times)
+echo "Running version tracking migration..."
+python3 add_version_tracking.py || echo "Version tracking migration already applied or skipped"
+
 # Start the application
 echo "Starting web server..."
 exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
