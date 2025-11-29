@@ -77,6 +77,23 @@ class VehicleService:
         # Search in database only (fast)
         return self._search_in_database(bien_so)
 
+    def search_by_cccd(self, cccd: str) -> Optional[List[VehicleInfo]]:
+        """
+        Search for vehicles by CCCD (Citizen ID) number
+
+        Args:
+            cccd: CCCD number (e.g., "001234567890")
+
+        Returns:
+            List of VehicleInfo if found, None otherwise
+        """
+        # Clean and normalize cccd
+        cccd = cccd.strip()
+        logger.info(f"Searching for vehicles with CCCD: {cccd}")
+
+        # Search in database only (fast)
+        return self._search_in_database_by_cccd(cccd)
+
     def _search_in_database(self, bien_so: str) -> Optional[VehicleInfo]:
         """Search for vehicle in database (fastest method)"""
         from app.database import SessionLocal, VehicleRecordDB, DataFileDB, BatchDB
@@ -118,6 +135,54 @@ class VehicleService:
 
         except Exception as e:
             logger.error(f"Error searching in database: {e}")
+            return None
+        finally:
+            db.close()
+
+    def _search_in_database_by_cccd(self, cccd: str) -> Optional[List[VehicleInfo]]:
+        """Search for vehicles by CCCD in database"""
+        from app.database import SessionLocal, VehicleRecordDB, DataFileDB, BatchDB
+
+        db = SessionLocal()
+        try:
+            # Search for vehicles in active batch with matching CCCD
+            records = db.query(VehicleRecordDB).join(
+                DataFileDB, VehicleRecordDB.data_file_id == DataFileDB.id
+            ).join(
+                BatchDB, DataFileDB.batch_id == BatchDB.id
+            ).filter(
+                BatchDB.is_active == True,
+                VehicleRecordDB.so_giay_to == cccd
+            ).all()
+
+            if records:
+                logger.info(f"Found {len(records)} vehicle(s) with CCCD {cccd} in database")
+                vehicles = []
+                for record in records:
+                    vehicles.append(VehicleInfo(
+                        bien_so=record.bien_so or "",
+                        mau_bien=record.mau_bien or "",
+                        loai_xe=record.loai_xe or "",
+                        ten=record.ten or "",
+                        dia_chi_dang_ky_xe=record.dia_chi_dang_ky_xe or "",
+                        khu_pho=record.khu_pho or "",
+                        dia_chi_thuong_tru=record.dia_chi_thuong_tru or "",
+                        noi_o_hien_tai=record.noi_o_hien_tai or "",
+                        so_khung=record.so_khung or "",
+                        so_may=record.so_may or "",
+                        so_dien_thoai=record.so_dien_thoai or "",
+                        loai_giay_to=record.loai_giay_to or "",
+                        so_giay_to=record.so_giay_to or "",
+                        trang_thai_xe=record.trang_thai_xe or "",
+                        trang_thai_dang_ky=record.trang_thai_dang_ky or ""
+                    ))
+                return vehicles
+
+            logger.info(f"No vehicles found with CCCD {cccd} in database")
+            return None
+
+        except Exception as e:
+            logger.error(f"Error searching by CCCD in database: {e}")
             return None
         finally:
             db.close()

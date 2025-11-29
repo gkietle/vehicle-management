@@ -4,14 +4,45 @@
 <div class="max-w-6xl mx-auto">
     <!-- Page Header -->
     <div class="mb-4 sm:mb-6 lg:mb-8">
-        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Tra cứu biển số xe</h2>
-        <p class="text-sm sm:text-base text-gray-600">Nhập biển số xe để tra cứu thông tin đăng ký</p>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Tra cứu thông tin xe</h2>
+        <p class="text-sm sm:text-base text-gray-600">Nhập biển số xe hoặc số CCCD để tra cứu thông tin đăng ký</p>
     </div>
 
     <!-- Search Form -->
     <div class="bg-white rounded-lg shadow-lg p-5 sm:p-6 lg:p-8 mb-6 sm:mb-8">
         <form id="searchForm" class="space-y-4 sm:space-y-6">
-            <div>
+            <!-- Search Type Selection -->
+            <div class="mb-4">
+                <label class="block text-base sm:text-lg font-medium text-gray-700 mb-3">
+                    Chọn hình thức tra cứu
+                </label>
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                    <label class="flex items-center cursor-pointer">
+                        <input
+                            type="radio"
+                            name="search_type"
+                            value="bien_so"
+                            checked
+                            class="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                            onchange="toggleSearchType()"
+                        >
+                        <span class="ml-2 text-sm sm:text-base text-gray-700">Theo biển số xe</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input
+                            type="radio"
+                            name="search_type"
+                            value="cccd"
+                            class="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                            onchange="toggleSearchType()"
+                        >
+                        <span class="ml-2 text-sm sm:text-base text-gray-700">Theo số CCCD</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- License Plate Search -->
+            <div id="bienSoSearch">
                 <label for="bien_so" class="block text-base sm:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
                     Biển số xe <span class="text-red-500">*</span>
                 </label>
@@ -20,9 +51,8 @@
                         type="text"
                         id="bien_so"
                         name="bien_so"
-                        placeholder="VÍ DU: 60B100129"
+                        placeholder="VÍ DỤ: 60B100129"
                         class="flex-1 px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base sm:text-lg font-semibold uppercase"
-                        required
                     >
                     <button
                         type="submit"
@@ -35,6 +65,32 @@
                     </button>
                 </div>
                 <p class="mt-3 text-sm sm:text-base text-gray-500 leading-relaxed">Nhập đúng biển số xe không dấu, viết hoa<br class="sm:hidden"> (VD: 60B100129, 60AA10113)</p>
+            </div>
+
+            <!-- CCCD Search -->
+            <div id="cccdSearch" class="hidden">
+                <label for="cccd" class="block text-base sm:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+                    Số CCCD <span class="text-red-500">*</span>
+                </label>
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                    <input
+                        type="text"
+                        id="cccd"
+                        name="cccd"
+                        placeholder="VÍ DỤ: 001234567890"
+                        class="flex-1 px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base sm:text-lg font-semibold"
+                    >
+                    <button
+                        type="submit"
+                        class="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center justify-center text-base sm:text-lg"
+                    >
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Tra cứu
+                    </button>
+                </div>
+                <p class="mt-3 text-sm sm:text-base text-gray-500 leading-relaxed">Nhập đúng số CCCD (12 số)</p>
             </div>
         </form>
     </div>
@@ -56,6 +112,17 @@
                 <p class="text-yellow-700" id="notFoundMessage">Không tìm thấy biển số trong hệ thống.</p>
                 <p class="text-sm text-yellow-600 mt-2">Nếu xe chưa có trong danh sách, bạn có thể <a href="#" onclick="submitNewVehicle()" class="underline font-semibold">gửi yêu cầu thêm mới</a></p>
             </div>
+        </div>
+    </div>
+
+    <!-- Vehicle List (for multiple results) -->
+    <div id="vehicleList" class="hidden">
+        <div class="bg-white rounded-lg shadow-lg p-5 sm:p-6 lg:p-8 mb-6">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
+                Tìm thấy <span id="vehicleCount" class="text-blue-600"></span> phương tiện
+            </h3>
+            <p class="text-sm sm:text-base text-gray-600 mb-4">Chọn một phương tiện để xem thông tin chi tiết:</p>
+            <div id="vehicleListContent" class="space-y-3"></div>
         </div>
     </div>
 
@@ -227,22 +294,51 @@
 
 <script>
     let currentBienSo = '';
+    let allVehicles = [];
+
+    function toggleSearchType() {
+        const searchType = document.querySelector('input[name="search_type"]:checked').value;
+        const bienSoSearch = document.getElementById('bienSoSearch');
+        const cccdSearch = document.getElementById('cccdSearch');
+
+        if (searchType === 'bien_so') {
+            bienSoSearch.classList.remove('hidden');
+            cccdSearch.classList.add('hidden');
+        } else {
+            bienSoSearch.classList.add('hidden');
+            cccdSearch.classList.remove('hidden');
+        }
+    }
 
     document.getElementById('searchForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const bienSo = document.getElementById('bien_so').value.trim().toUpperCase();
-        currentBienSo = bienSo;
+        const searchType = document.querySelector('input[name="search_type"]:checked').value;
+        const formData = new FormData();
+        formData.append('search_type', searchType);
+
+        let searchValue = '';
+        if (searchType === 'bien_so') {
+            searchValue = document.getElementById('bien_so').value.trim().toUpperCase();
+            formData.append('bien_so', searchValue);
+            currentBienSo = searchValue;
+        } else {
+            searchValue = document.getElementById('cccd').value.trim();
+            formData.append('cccd', searchValue);
+        }
+
+        if (!searchValue) {
+            alert('Vui lòng nhập thông tin tra cứu');
+            return;
+        }
 
         // Show loading, hide others
         document.getElementById('loading').classList.remove('hidden');
         document.getElementById('results').classList.add('hidden');
         document.getElementById('notFound').classList.add('hidden');
+        document.getElementById('vehicleList').classList.add('hidden');
 
         try {
-            const formData = new FormData();
-            formData.append('bien_so', bienSo);
-
             const response = await fetch('/api/search', {
                 method: 'POST',
                 body: formData
@@ -253,9 +349,16 @@
             // Hide loading
             document.getElementById('loading').classList.add('hidden');
 
-            if (data.found && data.vehicle) {
-                // Show results
-                displayResults(data.vehicle);
+            if (data.found) {
+                if (data.vehicles && data.vehicles.length > 1) {
+                    // Multiple vehicles found (CCCD search)
+                    allVehicles = data.vehicles;
+                    displayVehicleList(data.vehicles);
+                } else if (data.vehicle) {
+                    // Single vehicle found
+                    currentBienSo = data.vehicle.bien_so;
+                    displayResults(data.vehicle);
+                }
             } else {
                 // Show not found
                 document.getElementById('notFound').classList.remove('hidden');
@@ -267,6 +370,48 @@
             alert('Có lỗi xảy ra khi tìm kiếm. Vui lòng thử lại.');
         }
     });
+
+    function displayVehicleList(vehicles) {
+        const listContent = document.getElementById('vehicleListContent');
+        listContent.innerHTML = '';
+
+        document.getElementById('vehicleCount').textContent = vehicles.length;
+
+        vehicles.forEach((vehicle, index) => {
+            const card = document.createElement('div');
+            card.className = 'border-2 border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer';
+            card.onclick = () => selectVehicle(index);
+
+            card.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                        <div class="font-bold text-lg text-gray-800">${vehicle.bien_so || '-'}</div>
+                        <div class="text-sm text-gray-600">${vehicle.ten || '-'}</div>
+                        <div class="text-xs text-gray-500">${vehicle.loai_xe || '-'}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-600">CCCD: ${vehicle.so_giay_to || '-'}</div>
+                        <div class="text-xs text-gray-500">${vehicle.khu_pho || '-'}</div>
+                    </div>
+                </div>
+            `;
+
+            listContent.appendChild(card);
+        });
+
+        // Hide other sections, show vehicle list
+        document.getElementById('vehicleList').classList.remove('hidden');
+        document.getElementById('results').classList.add('hidden');
+    }
+
+    function selectVehicle(index) {
+        const vehicle = allVehicles[index];
+        currentBienSo = vehicle.bien_so;
+
+        // Hide vehicle list, show details
+        document.getElementById('vehicleList').classList.add('hidden');
+        displayResults(vehicle);
+    }
 
     function displayResults(vehicle) {
         // Fill in data

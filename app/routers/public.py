@@ -23,32 +23,65 @@ async def tra_cuu_page(request: Request):
 
 
 @router.post("/api/search")
-async def search_vehicle(bien_so: str = Form(...)) -> SearchResponse:
+async def search_vehicle(
+    bien_so: str = Form(None),
+    cccd: str = Form(None),
+    search_type: str = Form("bien_so")
+) -> SearchResponse:
     """
-    API endpoint to search for vehicle by license plate
+    API endpoint to search for vehicle by license plate or CCCD
 
     Args:
-        bien_so: License plate number
+        bien_so: License plate number (optional)
+        cccd: CCCD number (optional)
+        search_type: Type of search - "bien_so" or "cccd"
 
     Returns:
         SearchResponse with vehicle info if found
     """
     try:
-        logger.info(f"Searching for vehicle: {bien_so}")
+        if search_type == "cccd" and cccd:
+            logger.info(f"Searching for vehicles with CCCD: {cccd}")
 
-        # Search in vehicle data
-        vehicle = vehicle_service.search_by_bien_so(bien_so)
+            # Search by CCCD
+            vehicles = vehicle_service.search_by_cccd(cccd)
 
-        if vehicle:
-            return SearchResponse(
-                found=True,
-                message="Tìm thấy thông tin xe",
-                vehicle=vehicle
-            )
+            if vehicles:
+                return SearchResponse(
+                    found=True,
+                    message=f"Tìm thấy {len(vehicles)} phương tiện",
+                    vehicle=vehicles[0] if len(vehicles) == 1 else None,
+                    vehicles=vehicles
+                )
+            else:
+                return SearchResponse(
+                    found=False,
+                    message=f"Không tìm thấy phương tiện nào với CCCD {cccd}",
+                    vehicle=None
+                )
+
+        elif search_type == "bien_so" and bien_so:
+            logger.info(f"Searching for vehicle: {bien_so}")
+
+            # Search by license plate
+            vehicle = vehicle_service.search_by_bien_so(bien_so)
+
+            if vehicle:
+                return SearchResponse(
+                    found=True,
+                    message="Tìm thấy thông tin xe",
+                    vehicle=vehicle
+                )
+            else:
+                return SearchResponse(
+                    found=False,
+                    message=f"Không tìm thấy thông tin cho biển số {bien_so}",
+                    vehicle=None
+                )
         else:
             return SearchResponse(
                 found=False,
-                message=f"Không tìm thấy thông tin cho biển số {bien_so}",
+                message="Vui lòng nhập biển số xe hoặc số CCCD",
                 vehicle=None
             )
 

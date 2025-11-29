@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Literal
+from typing import Optional, Literal, List
 from datetime import datetime
 
 class VehicleInfo(BaseModel):
@@ -97,3 +97,4 @@ class SearchResponse(BaseModel):
     found: bool
     message: str
     vehicle: Optional[VehicleInfo] = None
+    vehicles: Optional[List[VehicleInfo]] = None
