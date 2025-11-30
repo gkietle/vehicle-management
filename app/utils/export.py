@@ -7,6 +7,7 @@ from app.config import settings
 import logging
 from openpyxl import load_workbook
 from openpyxl.styles import Font, Alignment, Border, Side
+from openpyxl.cell.cell import MergedCell
 import shutil
 
 logger = logging.getLogger(__name__)
@@ -53,9 +54,19 @@ def export_requests_to_excel(requests: List[RequestInDB], loai_mau: int) -> Path
     for idx, row_data in enumerate(data_rows, start=data_start_row + 1):
         for col_idx, value in enumerate(row_data, start=1):
             cell = ws.cell(row=idx, column=col_idx)
-            cell.value = value
-            # Apply basic formatting
-            cell.alignment = Alignment(horizontal='left', vertical='center', wrap_text=True)
+
+            # Skip if cell is a MergedCell (read-only)
+            if isinstance(cell, MergedCell):
+                logger.debug(f"Skipping merged cell at row {idx}, col {col_idx}")
+                continue
+
+            try:
+                cell.value = value
+                # Apply basic formatting
+                cell.alignment = Alignment(horizontal='left', vertical='center', wrap_text=True)
+            except Exception as e:
+                logger.warning(f"Error writing to cell at row {idx}, col {col_idx}: {e}")
+                continue
 
     # Save workbook
     wb.save(output_file)
