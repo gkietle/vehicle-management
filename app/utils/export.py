@@ -48,17 +48,21 @@ def export_requests_to_excel(requests: List[RequestInDB], loai_mau: int) -> Path
     # Find data start row (after headers)
     data_start_row = 4  # Row 4 is headers, Row 5 starts data
 
+    # Unmerge all cells in data area to avoid MergedCell issues
+    # This allows us to write data to any cell without conflicts
+    merged_ranges = list(ws.merged_cells.ranges)
+    for merged_range in merged_ranges:
+        # Only unmerge cells in data rows (row 5 onwards)
+        if merged_range.min_row >= data_start_row + 1:
+            ws.unmerge_cells(str(merged_range))
+            logger.debug(f"Unmerged range: {merged_range}")
+
     # Prepare and write data
     data_rows = _prepare_export_data(requests, loai_mau)
 
     for idx, row_data in enumerate(data_rows, start=data_start_row + 1):
         for col_idx, value in enumerate(row_data, start=1):
             cell = ws.cell(row=idx, column=col_idx)
-
-            # Skip if cell is a MergedCell (read-only)
-            if isinstance(cell, MergedCell):
-                logger.debug(f"Skipping merged cell at row {idx}, col {col_idx}")
-                continue
 
             try:
                 cell.value = value
