@@ -68,9 +68,9 @@
             <span class="font-medium text-gray-700">Mẫu {{ i }}</span>
             <div class="flex items-center space-x-4">
                 <span class="text-2xl font-bold text-blue-600">{{ request_stats.by_form['mau_' ~ i] }}</span>
-                <a href="/admin/export/mau-{{ i }}" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                <button onclick="openExportModal({{ i }})" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
                     Export
-                </a>
+                </button>
                 <a href="/admin/yeu-cau?loai_mau={{ i }}" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
                     Xem
                 </a>
@@ -97,4 +97,120 @@
         <p class="text-gray-600">Tìm kiếm thông tin xe trong cơ sở dữ liệu</p>
     </a>
 </div>
+
+<!-- Export Date Range Modal -->
+<div id="exportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-800">Chọn khoảng thời gian xuất</h3>
+            <button onclick="closeExportModal()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <p class="text-gray-600 mb-4">Chọn khoảng thời gian ngày duyệt để xuất yêu cầu:</p>
+
+        <form id="exportForm" onsubmit="handleExport(event)">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Từ ngày:</label>
+                <input type="date" id="fromDate" name="from_date"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Đến ngày:</label>
+                <input type="date" id="toDate" name="to_date"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="flex items-center mb-6">
+                <input type="checkbox" id="allDates" onchange="toggleDateInputs()"
+                       class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="allDates" class="ml-2 text-sm text-gray-700">Xuất tất cả (không lọc theo ngày)</label>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeExportModal()"
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                    Hủy
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                    Xuất Excel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let currentExportMau = null;
+
+    function openExportModal(mau) {
+        currentExportMau = mau;
+        document.getElementById('exportModal').classList.remove('hidden');
+
+        // Set default dates (last 30 days)
+        const today = new Date();
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        document.getElementById('toDate').valueAsDate = today;
+        document.getElementById('fromDate').valueAsDate = thirtyDaysAgo;
+    }
+
+    function closeExportModal() {
+        document.getElementById('exportModal').classList.add('hidden');
+        currentExportMau = null;
+        document.getElementById('exportForm').reset();
+        document.getElementById('fromDate').disabled = false;
+        document.getElementById('toDate').disabled = false;
+        document.getElementById('allDates').checked = false;
+    }
+
+    function toggleDateInputs() {
+        const allDatesChecked = document.getElementById('allDates').checked;
+        document.getElementById('fromDate').disabled = allDatesChecked;
+        document.getElementById('toDate').disabled = allDatesChecked;
+    }
+
+    function handleExport(event) {
+        event.preventDefault();
+
+        if (!currentExportMau) {
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            return;
+        }
+
+        const allDates = document.getElementById('allDates').checked;
+        let url = `/admin/export/mau-${currentExportMau}`;
+
+        if (!allDates) {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+
+            if (!fromDate || !toDate) {
+                alert('Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc');
+                return;
+            }
+
+            if (new Date(fromDate) > new Date(toDate)) {
+                alert('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc');
+                return;
+            }
+
+            url += `?from_date=${fromDate}&to_date=${toDate}`;
+        }
+
+        // Download file
+        window.location.href = url;
+
+        // Close modal after a short delay
+        setTimeout(() => {
+            closeExportModal();
+        }, 500);
+    }
+</script>
 {% endblock %}

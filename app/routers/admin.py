@@ -81,11 +81,14 @@ async def admin_requests(
 @router.get("/export/mau-{loai_mau}")
 async def export_requests(
     loai_mau: int,
+    from_date: str = None,
+    to_date: str = None,
     username: str = Depends(verify_admin)
 ):
-    """Export requests to Excel for specific form (from active batch only)"""
+    """Export requests to Excel for specific form with optional date range filter"""
     try:
         from app.utils.export import export_requests_to_excel
+        from datetime import datetime
 
         # Get active batch
         active_batch = batch_service.get_active_batch()
@@ -100,21 +103,33 @@ async def export_requests(
         requests = request_service.get_all_requests(
             loai_mau=loai_mau,
             batch_id=active_batch.id,
-            latest_approved_only=True  # Only export latest approved versions
+            latest_approved_only=True,  # Only export latest approved versions
+            from_date=from_date,
+            to_date=to_date
         )
 
         if not requests:
+            date_info = ""
+            if from_date and to_date:
+                date_info = f" từ {from_date} đến {to_date}"
             raise HTTPException(
                 status_code=404,
-                detail=f"Không có yêu cầu đã duyệt (version mới nhất) nào cho mẫu {loai_mau} trong đợt {active_batch.name}"
+                detail=f"Không có yêu cầu đã duyệt (version mới nhất) nào cho mẫu {loai_mau} trong đợt {active_batch.name}{date_info}"
             )
 
         # Export to Excel
         output_file = export_requests_to_excel(requests, loai_mau)
 
+        # Generate filename with date range if provided
+        filename_parts = [f"Mau_{loai_mau}", active_batch.name]
+        if from_date and to_date:
+            filename_parts.append(f"{from_date}_to_{to_date}")
+        filename_parts.append(f"YeuCau_{len(requests)}")
+        filename = "_".join(filename_parts) + ".xlsx"
+
         return FileResponse(
             path=output_file,
-            filename=f"Mau_{loai_mau}_{active_batch.name}_YeuCau_{len(requests)}.xlsx",
+            filename=filename,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 

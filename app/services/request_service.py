@@ -168,14 +168,18 @@ class RequestService:
         sequence = today_count + 1
         return f"REQ_{date_str}_{sequence:04d}"
 
-    def get_all_requests(self, loai_mau: Optional[int] = None, batch_id: Optional[int] = None, latest_approved_only: bool = False) -> List[RequestInDB]:
+    def get_all_requests(self, loai_mau: Optional[int] = None, batch_id: Optional[int] = None,
+                         latest_approved_only: bool = False, from_date: Optional[str] = None,
+                         to_date: Optional[str] = None) -> List[RequestInDB]:
         """
-        Get all requests, optionally filtered by form type and/or batch
+        Get all requests, optionally filtered by form type, batch, and date range
 
         Args:
             loai_mau: Form type (1-10) to filter by
             batch_id: Batch ID to filter by (if None, get all)
             latest_approved_only: If True, only return latest approved version for each bien_so + loai_mau
+            from_date: Filter requests approved from this date (YYYY-MM-DD format)
+            to_date: Filter requests approved to this date (YYYY-MM-DD format)
 
         Returns:
             List of requests
@@ -183,6 +187,7 @@ class RequestService:
         db = self._get_db()
         try:
             from sqlalchemy.orm import joinedload
+            from datetime import datetime
 
             # Eager load batch relationship
             query = db.query(RequestDB).options(joinedload(RequestDB.batch)).order_by(RequestDB.ngay_tao.desc())
@@ -195,6 +200,23 @@ class RequestService:
 
             if latest_approved_only:
                 query = query.filter(RequestDB.is_latest_approved == True)
+
+            # Filter by date range (ngay_duyet)
+            if from_date:
+                try:
+                    from_datetime = datetime.strptime(from_date, "%Y-%m-%d")
+                    query = query.filter(RequestDB.ngay_duyet >= from_datetime)
+                except ValueError:
+                    logger.warning(f"Invalid from_date format: {from_date}")
+
+            if to_date:
+                try:
+                    # Add 1 day to include the entire to_date
+                    to_datetime = datetime.strptime(to_date, "%Y-%m-%d")
+                    to_datetime = to_datetime.replace(hour=23, minute=59, second=59)
+                    query = query.filter(RequestDB.ngay_duyet <= to_datetime)
+                except ValueError:
+                    logger.warning(f"Invalid to_date format: {to_date}")
 
             db_requests = query.all()
             return [self._db_to_pydantic(req) for req in db_requests]
